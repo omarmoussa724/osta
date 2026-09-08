@@ -1,0 +1,2582 @@
+<title>OSTA Fabrication OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ground:#0B0D10; --ground-2:#0E1116; --ground-3:#101419;
+  --panel:#14171C; --panel-2:#181C22; --panel-3:#1E232B;
+  --line:#252A32; --line-2:#2F353F; --line-soft:#1B1F25;
+  --ink:#E7EAEE; --ink-2:#A2ABB6; --ink-3:#6D7681; --ink-4:#525A64;
+  --accent:#4C9AFF; --accent-ink:#A6CCFF; --accent-deep:#0A1D33;
+  --ok:#35C88F; --info:#4C9AFF; --warn:#E0A63C; --crit:#E5484D; --violet:#9A7CF0; --idle:#6D7681;
+  --radius:7px; --radius-sm:5px;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --display:'Archivo','Inter',system-ui,sans-serif;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+::selection{background:rgba(76,154,255,.28)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#232830;border-radius:6px;border:2px solid var(--ground)}
+::-webkit-scrollbar-thumb:hover{background:#2f3742}
+
+.mono{font-family:var(--mono)}
+.tnum{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.muted{color:var(--ink-3)}
+.dim{color:var(--ink-2)}
+.h1{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em;margin:0}
+.h2{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:-.005em;margin:0}
+.sub{color:var(--ink-3);font-size:12.5px;margin-top:3px}
+
+/* App shell */
+.app{display:grid;grid-template-columns:238px 1fr;min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--ground-2);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;padding:14px 12px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px}
+.brand .mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(150deg,#4C9AFF,#2A6BD4);display:grid;place-items:center;color:#06121F;font-family:var(--display);font-weight:700;font-size:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.brand b{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:.02em}
+.brand span{font-size:9.5px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase;display:block;margin-top:1px}
+.navgroup{margin-top:12px;padding:0 8px 4px}
+.navgroup .eyebrow{font-size:9.5px}
+.nav a{display:flex;align-items:center;gap:9px;padding:6.5px 9px;border-radius:6px;color:var(--ink-2);font-size:12.5px;font-weight:450}
+.nav a svg{width:15px;height:15px;color:var(--ink-3);flex:none}
+.nav a:hover{background:var(--panel-2);color:var(--ink)}
+.nav a.on{background:var(--panel-3);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
+.nav a.on svg{color:var(--accent)}
+.side-foot{margin-top:auto;padding:12px 10px 4px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.side-foot b{font-family:var(--display);font-size:12px;letter-spacing:.02em}
+.side-foot span{font-size:10.5px;color:var(--ink-3)}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:52px;padding:0 22px;background:color-mix(in srgb,var(--ground) 82%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.crumbs{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);min-width:0;overflow:hidden}
+.crumbs a{color:var(--ink-2);white-space:nowrap}
+.crumbs a:hover{color:var(--ink)}
+.crumbs .cur{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumbs svg{width:13px;height:13px;color:var(--ink-4);flex:none}
+.topbar .spacer{flex:1}
+.tb-date{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tb-search{display:flex;align-items:center;gap:8px;padding:6px 10px;min-width:210px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-3);font-size:12px;cursor:text}
+.tb-search svg{width:14px;height:14px}
+.tb-search kbd{margin-left:auto;font-family:var(--mono);font-size:10px;padding:1px 5px;border:1px solid var(--line-2);border-radius:4px;color:var(--ink-3)}
+.tb-ic{width:30px;height:30px;display:grid;place-items:center;border-radius:6px;color:var(--ink-2);cursor:pointer;position:relative}
+.tb-ic:hover{background:var(--panel-2);color:var(--ink)}
+.tb-ic svg{width:16px;height:16px}
+.tb-ic .badge{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 2px var(--ground)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(150deg,#2F3742,#1c2129);display:grid;place-items:center;font-size:11px;font-weight:600;color:var(--ink);border:1px solid var(--line-2)}
+
+.page{padding:22px 26px 72px;max-width:1460px;width:100%}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px}
+.page-head .actions{display:flex;gap:8px;flex:none}
+
+/* Panels / cards */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.panel-h h3{font-family:var(--display);font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);margin:0}
+.panel-b{padding:14px}
+.panel-b.flush{padding:0}
+.grid{display:grid;gap:12px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:12px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wrap{flex-wrap:wrap}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden}
+.kpi .k-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.kpi .k-val{font-family:var(--display);font-size:24px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;line-height:1}
+.kpi .k-foot{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-3)}
+.kpi .k-foot .up{color:var(--ok)}
+.kpi .k-foot .down{color:var(--crit)}
+.kpi .k-foot svg{width:12px;height:12px}
+.kpi .k-spark{position:absolute;right:10px;bottom:10px;opacity:.6}
+
+/* pill */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 7px;border-radius:999px;font-size:10.5px;font-weight:500;letter-spacing:.02em;border:1px solid transparent;white-space:nowrap;line-height:1.4}
+.pill .dot{width:6px;height:6px;border-radius:50%;flex:none}
+.pill.sq{border-radius:5px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:6px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;transition:background .12s,border-color .12s;white-space:nowrap}
+.btn:hover{background:var(--panel-3);border-color:#3a414c}
+.btn svg{width:14px;height:14px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#06121F;font-weight:600}
+.btn.primary:hover{background:#3f8ef5;border-color:#3f8ef5}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink-2)}
+.btn.ghost:hover{background:var(--panel-2);color:var(--ink)}
+.btn.sm{padding:5px 9px;font-size:11px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:10px 12px;border-bottom:1px solid var(--line);background:var(--ground-2);position:sticky;top:0;white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr{cursor:pointer;transition:background .1s}
+.tbl tbody tr:hover{background:var(--panel-2)}
+.tbl tr.norow{cursor:default}
+.tbl tr.norow:hover{background:transparent}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:11.5px}
+.tbl a.lnk{color:var(--accent-ink)}
+.tbl a.lnk:hover{text-decoration:underline}
+.code{font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+.code.dimc{color:var(--ink-2)}
+
+/* progress bar */
+.bar{height:6px;border-radius:999px;background:var(--panel-3);overflow:hidden;position:relative}
+.bar>i{display:block;height:100%;border-radius:999px;background:var(--accent);transition:width .3s}
+.bar.tall{height:8px}
+
+/* misc */
+.divider{height:1px;background:var(--line);margin:2px 0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);font-size:11px;color:var(--ink-2)}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px 14px;font-size:12.5px}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0;color:var(--ink)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tabs a{padding:8px 12px;font-size:12.5px;color:var(--ink-3);border-bottom:2px solid transparent;font-weight:450}
+.tabs a:hover{color:var(--ink-2)}
+.tabs a.on{color:var(--ink);border-bottom-color:var(--accent)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:46px 20px;color:var(--ink-3);gap:10px}
+.empty svg{width:26px;height:26px;color:var(--ink-4)}
+.empty b{color:var(--ink-2);font-weight:600;font-size:13px}
+.empty p{margin:0;font-size:12px;max-width:320px}
+.filterbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{padding:6px 10px;font-size:11.5px;color:var(--ink-3);background:transparent;border:0;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--panel-3);color:var(--ink)}
+.inp{padding:7px 10px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;color:var(--ink);font-size:12px;min-width:200px}
+.inp::placeholder{color:var(--ink-4)}
+.inp:focus{outline:none;border-color:var(--accent)}
+
+/* flow stages */
+.flow{display:flex;gap:0;overflow-x:auto;padding-bottom:6px}
+.stage{flex:1;min-width:132px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:12px;display:flex;flex-direction:column;gap:8px;position:relative}
+.stage+.stage{margin-left:26px}
+.stage .arrow{position:absolute;left:-24px;top:50%;transform:translateY(-50%);color:var(--ink-4)}
+.stage .arrow svg{width:16px;height:16px}
+.stage .s-name{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.stage .s-count{font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.stage .s-delay{font-size:10.5px;font-variant-numeric:tabular-nums}
+.stage.bottleneck{box-shadow:inset 0 0 0 1px var(--crit),0 0 0 1px var(--crit)}
+.stage .s-top{position:absolute;top:0;left:12px;right:12px;height:2px;border-radius:2px}
+
+/* risks */
+.risk{display:flex;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);align-items:flex-start}
+.risk .rdot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex:none}
+.risk .rmain{flex:1;min-width:0}
+.risk .rtitle{font-size:12.5px;font-weight:500}
+.risk .rmeta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.risk .rtag{font-family:var(--mono);font-size:10.5px;color:var(--ink-2)}
+
+/* timeline */
+.tl{display:flex;flex-direction:column}
+.tl-step{display:grid;grid-template-columns:22px 1fr;gap:12px;padding-bottom:4px}
+.tl-rail{display:flex;flex-direction:column;align-items:center}
+.tl-node{width:13px;height:13px;border-radius:50%;border:2px solid var(--ink-4);background:var(--ground);flex:none;margin-top:2px}
+.tl-node.done{background:var(--ok);border-color:var(--ok)}
+.tl-node.cur{border-color:var(--accent);background:var(--accent-deep);box-shadow:0 0 0 4px rgba(76,154,255,.16)}
+.tl-node.fail{background:var(--crit);border-color:var(--crit)}
+.tl-line{flex:1;width:2px;background:var(--line-2);margin:3px 0}
+.tl-line.done{background:var(--ok)}
+.tl-step .tl-body{padding-bottom:16px}
+.tl-step:last-child .tl-body{padding-bottom:0}
+.tl-name{font-size:12.5px;font-weight:500}
+.tl-name.muted2{color:var(--ink-3);font-weight:450}
+.tl-when{font-size:10.5px;color:var(--ink-3);font-family:var(--mono);margin-top:2px}
+
+/* kanban */
+.board{display:grid;grid-template-columns:repeat(5,minmax(210px,1fr));gap:12px;align-items:start}
+.klane{background:var(--ground-2);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;min-height:120px}
+.klane.drop{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--ground-2))}
+.klane-h{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+.klane-h .kt{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+.klane-h .kn{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.klane-b{padding:10px;display:flex;flex-direction:column;gap:9px}
+.jcard{background:var(--panel);border:1px solid var(--line-2);border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:8px;cursor:grab}
+.jcard:active{cursor:grabbing}
+.jcard.drag{opacity:.4}
+.jcard .jc-code{font-family:var(--mono);font-size:11.5px;color:var(--accent-ink);font-weight:500}
+.jcard .jc-desc{font-size:12px}
+.jcard .jc-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:10.5px;color:var(--ink-3)}
+.jcard .jc-meta b{color:var(--ink-2);font-weight:500}
+
+/* nesting sheet */
+.sheet-box{background:var(--ground-2);border:1px solid var(--line);border-radius:8px;padding:16px}
+
+/* command palette */
+.cmdk-ov{position:fixed;inset:0;z-index:80;background:rgba(4,6,9,.62);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding-top:12vh}
+.cmdk{width:min(640px,92vw);background:var(--panel);border:1px solid var(--line-2);border-radius:12px;box-shadow:0 24px 60px -12px rgba(0,0,0,.7);overflow:hidden}
+.cmdk-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cmdk-in svg{width:16px;height:16px;color:var(--ink-3)}
+.cmdk-in input{flex:1;background:transparent;border:0;outline:none;color:var(--ink);font-size:14px;font-family:var(--sans)}
+.cmdk-res{max-height:52vh;overflow-y:auto;padding:8px}
+.cmdk-grp{font-size:9.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-4);padding:10px 10px 5px}
+.cmdk-item{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:7px;cursor:pointer}
+.cmdk-item:hover,.cmdk-item.sel{background:var(--panel-3)}
+.cmdk-item svg{width:15px;height:15px;color:var(--ink-3);flex:none}
+.cmdk-item .ci-main{flex:1;min-width:0}
+.cmdk-item .ci-label{font-size:12.5px}
+.cmdk-item .ci-sub{font-size:10.5px;color:var(--ink-3)}
+.cmdk-item .ci-code{font-family:var(--mono);font-size:10px;color:var(--ink-4);padding:2px 6px;border:1px solid var(--line);border-radius:4px}
+.cmdk-foot{display:flex;gap:14px;padding:9px 14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-4)}
+.cmdk-hint{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:12px}
+.cmdk-hint code{font-family:var(--mono);color:var(--accent-ink);background:var(--panel-2);padding:1px 5px;border-radius:4px}
+
+/* toasts */
+.toasts{position:fixed;right:18px;bottom:18px;z-index:90;display:flex;flex-direction:column;gap:8px;max-width:340px}
+.toast{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;background:var(--panel-3);border:1px solid var(--line-2);border-radius:8px;box-shadow:var(--shadow);animation:tin .18s ease-out}
+.toast svg{width:15px;height:15px;flex:none;margin-top:1px}
+.toast .tt{font-size:12.5px}
+.toast .td{font-size:11px;color:var(--ink-3);margin-top:1px}
+@keyframes tin{from{opacity:0;transform:translateY(6px)}}
+
+.skeleton{padding:60px;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;min-height:100vh;color:var(--ink-3);font-family:var(--display)}
+.skeleton .sp{width:22px;height:22px;border:2px solid var(--line-2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.c8-4{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.c7-5{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+
+@media (max-width:1180px){
+  .app{grid-template-columns:0 1fr}
+  .side{position:fixed;left:0;top:0;z-index:60;width:238px;transform:translateX(-100%);transition:transform .2s}
+  .app.nav-open .side{transform:none;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  .kpi-row{grid-template-columns:repeat(3,1fr)}
+  .c8-4,.c7-5{grid-template-columns:1fr}
+  .board{grid-template-columns:repeat(5,minmax(180px,1fr));overflow-x:auto}
+}
+@media (max-width:720px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .two,.three{grid-template-columns:1fr}
+  .page{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+
+<div id="root"><div class="skeleton"><div class="sp"></div><div>Loading OSTA workspace…</div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef, useCallback, createContext, useContext } = React;
+
+/* ============================== utils ============================== */
+function cx(){ return Array.prototype.filter.call(arguments, Boolean).join(' '); }
+function hexA(hex, a){
+  const h = hex.replace('#',''); const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+const TONE = { ok:'#35C88F', info:'#4C9AFF', warn:'#E0A63C', crit:'#E5484D', violet:'#9A7CF0', idle:'#6D7681', accent:'#4C9AFF' };
+function toneColor(t){ return TONE[t] || TONE.idle; }
+function fmtInt(n){ return (n==null||isNaN(n)) ? '—' : Math.round(n).toLocaleString('en-US'); }
+function fmtEGP(n){
+  if(n==null) return '—';
+  if(n>=1e6) return 'EGP ' + (n/1e6).toFixed(2).replace(/\.?0+$/,'') + 'M';
+  if(n>=1e3) return 'EGP ' + Math.round(n).toLocaleString('en-US');
+  return 'EGP ' + fmtInt(n);
+}
+function fmtT(kg){ return (kg/1000).toFixed(kg/1000 < 10 ? 2 : 1).replace(/\.0$/,'') + ' t'; }
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function fmtDateShort(iso){
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+}
+const TODAY = new Date('2026-09-07T00:00:00');
+function daysFromToday(iso){
+  const d = new Date(iso + 'T00:00:00');
+  return Math.round((d - TODAY) / 86400000);
+}
+function mulberry32(a){ return function(){ a|=0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a>>>15, 1|a); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14) >>> 0) / 4294967296; }; }
+
+/* ============================== router ============================== */
+function useRoute(){
+  const read = () => (window.location.hash.replace(/^#/, '') || '/');
+  const [path, setPath] = useState(read());
+  useEffect(() => {
+    const on = () => { setPath(read()); window.scrollTo(0, 0); };
+    window.addEventListener('hashchange', on);
+    return () => window.removeEventListener('hashchange', on);
+  }, []);
+  const segs = path.split('?')[0].split('/').filter(Boolean);
+  return { path, segs };
+}
+function go(href){ window.location.hash = href; }
+function A(props){
+  const { href, children, className, onClick, title, style } = props;
+  return <a href={'#' + href} className={className} title={title} style={style}
+    onClick={(e)=>{ if(onClick) onClick(e); }}>{children}</a>;
+}
+
+/* ============================== icons ============================== */
+const P = {
+  dashboard:'M3 13h8V3H3v10Zm10 8h8V11h-8v10ZM3 21h8v-6H3v6ZM13 3v6h8V3h-8Z',
+  projects:'M3 7h18M3 7l1.5 12.5A2 2 0 0 0 6.5 21h11a2 2 0 0 0 2-1.5L21 7M3 7l2.2-3.2A2 2 0 0 1 6.8 3h10.4a2 2 0 0 1 1.6.8L21 7',
+  production:'M3 21h18M4 21V9l6 4V9l6 4V6l4 3v12M8 21v-4M12 21v-4M16 21v-4',
+  outsourcing:'M8 7h13M8 7 5 4M8 7l-3 3M16 17H3m13 0 3 3m-3-3 3-3',
+  bom:'M6 3v18M6 8h8a3 3 0 0 1 3 3v0M6 15h8a3 3 0 0 0 3-3M17 5.5h4M17 12h4M17 18.5h4M6 3.5A1.5 1.5 0 1 0 6 .5M19 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm0 6.5a1.5 1.5 0 1 0 0-3M19 20a1.5 1.5 0 1 0 0-3',
+  parts:'M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 0v20M3 7l9 5 9-5',
+  cadcam:'M4 4h16v16H4zM4 9h16M9 4v16M13 13l3 3M13 16l3-3',
+  nesting:'M3 3h18v18H3zM3 9h6V3M15 3v6h6M9 15H3v6M15 21v-6h6M9 9h6v6H9z',
+  materials:'M12 2 2 7l10 5 10-5-10-5ZM2 12l10 5 10-5M2 17l10 5 10-5',
+  inventory:'M3 9 12 4l9 5v10l-9 5-9-5V9Zm0 0 9 5 9-5M12 14v10',
+  suppliers:'M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 10h.01M15 10h.01M9 13h.01M15 13h.01',
+  qc:'M20 7 9 18l-5-5M12 2l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V5l7-3Z',
+  issues:'M12 9v4m0 4h.01M10.3 3.3 2.3 17a2 2 0 0 0 1.7 3h16a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0Z',
+  analytics:'M3 3v18h18M8 17V9M13 17V5M18 17v-6',
+  settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8.4-3a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.2A1.7 1.7 0 0 0 6 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 12H2.8a2 2 0 1 1 0-4H3a1.7 1.7 0 0 0 1.6-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 12 3.6V3a2 2 0 1 1 4 0v.2A1.7 1.7 0 0 0 19.4 6l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21 12h.2a2 2 0 1 1 0 4H21Z',
+  search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.3-4.3',
+  bell:'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
+  chevR:'m9 18 6-6-6-6',
+  chevD:'m6 9 6 6 6-6',
+  arrowR:'M5 12h14m-6-7 7 7-7 7',
+  arrowL:'M19 12H5m6 7-7-7 7-7',
+  x:'M18 6 6 18M6 6l12 12',
+  check:'M20 6 9 17l-5-5',
+  plus:'M12 5v14M5 12h14',
+  upload:'M12 15V3m0 0-4 4m4-4 4 4M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4',
+  download:'M12 3v12m0 0 4-4m-4 4-4-4M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4',
+  ext:'M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6',
+  clock:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-16v6l4 2',
+  cal:'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
+  user:'M20 21a8 8 0 1 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z',
+  cmd:'M15 6a3 3 0 1 1 3 3h-3V6ZM9 6a3 3 0 1 0-3 3h3V6Zm0 12a3 3 0 1 0 3-3H9v3Zm6 0a3 3 0 1 1 3-3h-3v3ZM9 9h6v6H9z',
+  filter:'M3 4h18l-7 8v7l-4 2v-9L3 4Z',
+  lock:'M5 11h14v10H5V11Zm3 0V7a4 4 0 1 1 8 0v4',
+  flame:'M12 22c4 0 7-3 7-7 0-4-3-6-3-9 0 2-2 3-3 4-1-2-1-4-1-6-3 2-6 5-6 11 0 4 3 7 7 7Z',
+  ruler:'m16 2 6 6L8 22l-6-6L16 2Zm-6 6 2 2m1-5 2 2m-8 8 2 2m1-5 2 2',
+  scissors:'M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8.1 8.1 20 20M8.1 15.9 20 4M8.5 12H8',
+  wrench:'M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5 2.5-2.5Z',
+  activity:'M22 12h-4l-3 9L9 3l-3 9H2',
+  trendUp:'M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6',
+  trendDown:'M22 17 13.5 8.5 8.5 13.5 2 7M16 17h6v-6',
+  dot:'M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z',
+  circle:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z',
+  cornerR:'M9 10 4 15l5 5M4 15h11a5 5 0 0 0 5-5V4',
+  box:'M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 0v20M3 7l9 5 9-5',
+  layers:'M12 2 2 7l10 5 10-5-10-5ZM2 12l10 5 10-5M2 17l10 5 10-5',
+  factory:'M3 21h18M4 21V9l6 4V9l6 4V6l4 3v12M8 21v-4M12 21v-4M16 21v-4',
+  truck:'M1 3h15v13H1zM16 8h4l3 3v5h-7M5.5 19a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm13 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
+  menu:'M3 6h18M3 12h18M3 18h18',
+  file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm0 0v6h6',
+  play:'M6 3 20 12 6 21V3Z',
+  pause:'M6 4h4v16H6zM14 4h4v16h-4z',
+  refresh:'M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5',
+  spark:'M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8',
+  gauge:'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm1.4-1.4L18 8M4 20a9 9 0 1 1 16 0',
+};
+function Icon({ n, size, cls, style }){
+  const d = P[n] || P.circle;
+  return <svg width={size||16} height={size||16} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={cls} style={style} aria-hidden="true">
+    <path d={d}/></svg>;
+}
+
+/* ============================== data model ============================== */
+/* Manufacturing status vocabulary — used everywhere via <MfgStatus/> */
+const MFG = {
+  NOT_STARTED:  { label:'Not Started',   tone:'idle'   },
+  READY:        { label:'Ready',         tone:'ok'     },  // ready for assembly (post FINAL_DIM_QC)
+  IN_PRODUCTION:{ label:'In Production',  tone:'info'   },
+  BLOCKED:      { label:'Blocked',        tone:'crit'   },
+  QC:           { label:'In QC',          tone:'warn'   },
+  PASSED:       { label:'QC Passed',      tone:'ok'     },
+  FAILED:       { label:'QC Failed',      tone:'crit'   },
+  OUTSOURCED:   { label:'Outsourced',     tone:'violet' },
+  COMPLETE:     { label:'Complete',       tone:'ok'     },
+};
+const PROJ_STATUS = {
+  ENGINEERING:  { label:'Engineering',   tone:'idle'   },
+  MATERIAL:     { label:'Material',      tone:'warn'   },
+  NESTING:      { label:'Nesting',       tone:'info'   },
+  IN_PRODUCTION:{ label:'In Production', tone:'info'   },
+  OUTSOURCED:   { label:'Outsourced',    tone:'violet' },
+  QC:           { label:'Quality',       tone:'warn'   },
+  ASSEMBLY:     { label:'Assembly',      tone:'info'   },
+  DELIVERY:     { label:'Delivery',      tone:'ok'     },
+  DELAYED:      { label:'Delayed',       tone:'crit'   },
+};
+const OUT_STEPS = ['RELEASED','MATERIAL_CONFIRMED','PRODUCTION','QC','DISPATCH','RECEIVED'];
+const OUT_STATUS = {
+  RFQ_SENT:          { label:'RFQ Sent',          tone:'idle',   step:-1 },
+  RELEASED:          { label:'Released',          tone:'idle',   step:0 },
+  MATERIAL_CONFIRMED:{ label:'Material Confirmed', tone:'info',   step:1 },
+  PRODUCTION:        { label:'In Production',     tone:'info',   step:2 },
+  QC:               { label:'In QC',             tone:'warn',   step:3 },
+  DISPATCH:          { label:'Dispatched',        tone:'info',   step:4 },
+  RECEIVED:          { label:'Received',          tone:'ok',     step:5 },
+  AT_RISK:           { label:'At Risk',           tone:'crit',   step:2 },
+};
+
+const MATERIALS = [
+  { grade:'S235JR', thk:6,  family:'Structural Steel', avail:4.2, reserved:2.1, required:3.8, price:48000 },
+  { grade:'S235JR', thk:8,  family:'Structural Steel', avail:2.8, reserved:1.4, required:2.1, price:48000 },
+  { grade:'S235JR', thk:10, family:'Structural Steel', avail:6.5, reserved:2.0, required:3.1, price:48000 },
+  { grade:'S235JR', thk:12, family:'Structural Steel', avail:3.1, reserved:0.9, required:1.2, price:49500 },
+  { grade:'S235JR', thk:3,  family:'Structural Steel', avail:2.4, reserved:0.7, required:1.0, price:47000 },
+  { grade:'S235JR', thk:2,  family:'Structural Steel', avail:1.9, reserved:1.1, required:1.6, price:47000 },
+  { grade:'S355JR', thk:10, family:'High-Strength Steel', avail:5.0, reserved:2.6, required:4.2, price:62000 },
+  { grade:'S355JR', thk:12, family:'High-Strength Steel', avail:2.2, reserved:1.0, required:1.4, price:63500 },
+  { grade:'S355JR', thk:15, family:'High-Strength Steel', avail:1.6, reserved:0.6, required:0.9, price:64000 },
+  { grade:'SS304',  thk:2,  family:'Stainless Steel', avail:0.9, reserved:0.3, required:0.5, price:210000 },
+  { grade:'SS304',  thk:3,  family:'Stainless Steel', avail:1.2, reserved:0.5, required:0.8, price:212000 },
+  { grade:'SS316',  thk:3,  family:'Stainless Steel', avail:0.6, reserved:0.2, required:0.7, price:340000 },
+].map(m => ({ ...m, key:m.grade + '-' + m.thk, shortage: Math.max(0, +(m.required - (m.avail - m.reserved)).toFixed(1)) }));
+function findMat(grade, thk){ return MATERIALS.find(m => m.grade===grade && m.thk===thk); }
+
+const MACHINES = [
+  { id:'M-L01', name:'TRUMPF TruLaser 5030', group:'Laser Cutting', util:82, queue:142 },
+  { id:'M-L02', name:'TRUMPF TruLaser 3030', group:'Laser Cutting', util:68, queue:61 },
+  { id:'M-L03', name:'Bystronic ByStar Fiber', group:'Laser Cutting', util:59, queue:40 },
+  { id:'M-P01', name:'TRUMPF TruPunch 5000', group:'Punching', util:74, queue:88 },
+  { id:'M-B01', name:'TRUMPF TruBend 7036', group:'Press Brake', util:77, queue:96 },
+  { id:'M-B02', name:'Amada HG 1303', group:'Press Brake', util:55, queue:44 },
+  { id:'M-C01', name:'DMG MORI CLX 450', group:'CNC Turning', util:41, queue:12 },
+  { id:'M-C02', name:'Haas VF-4', group:'CNC Milling', util:63, queue:19 },
+  { id:'M-W01', name:'Welding Cell 1 · MIG', group:'Welding', util:71, queue:73 },
+  { id:'M-W02', name:'Welding Cell 2 · TIG', group:'Welding', util:48, queue:22 },
+  { id:'M-W03', name:'Robotic Welding Cell', group:'Welding', util:66, queue:31 },
+  { id:'M-Q01', name:'CMM Inspection Bench', group:'Quality', util:52, queue:41 },
+];
+function findMachine(name){ return MACHINES.find(m => m.name===name) || { name, group:'—', util:0, queue:0 }; }
+
+const SUPPLIERS = [
+  { id:'SUP-01', name:'Cairo Precision Fabrication', city:'6th of October City', processes:['Laser Cutting','Press Brake'], rating:4.6, onTime:91, capacity:78, contact:'Eng. Karim Fouad', phone:'+20 100 442 8817', email:'karim@cairoprecision.com.eg' },
+  { id:'SUP-02', name:'Alexandria Steel Fabricators', city:'Alexandria', processes:['Welding','Assembly'], rating:4.2, onTime:84, capacity:64, contact:'Eng. Mostafa Zaghloul', phone:'+20 122 771 0043', email:'ops@alexsteelfab.com' },
+  { id:'SUP-03', name:'10th of Ramadan Machining', city:'10th of Ramadan City', processes:['CNC Machining'], rating:4.7, onTime:95, capacity:59, contact:'Eng. Hoda Nasr', phone:'+20 101 209 3355', email:'hoda@tor-machining.com' },
+  { id:'SUP-04', name:'Delta Metal Works', city:'Tanta', processes:['Laser Cutting','Punching'], rating:3.9, onTime:78, capacity:81, contact:'Mr. Sameh Ibrahim', phone:'+20 128 640 1192', email:'sameh@deltametalworks.net' },
+  { id:'SUP-05', name:'Helwan Heavy Industries', city:'Helwan', processes:['Plate Rolling','Heavy Fabrication'], rating:4.4, onTime:88, capacity:47, contact:'Eng. Tarek El-Deeb', phone:'+20 106 553 9027', email:'tarek@hhi.com.eg' },
+  { id:'SUP-06', name:'Borg El Arab Galvanizing', city:'Borg El Arab', processes:['Hot-Dip Galvanizing'], rating:4.1, onTime:82, capacity:70, contact:'Mr. Ayman Saad', phone:'+20 111 330 7744', email:'ayman@beagalv.com' },
+  { id:'SUP-07', name:'El Obour Powder Coating', city:'El Obour City', processes:['Powder Coating','Painting'], rating:4.3, onTime:86, capacity:66, contact:'Eng. Nourhan Adel', phone:'+20 109 884 2201', email:'nourhan@obourcoat.com' },
+  { id:'SUP-08', name:'Nasr Casting & Forging', city:'Cairo', processes:['Casting','Forging'], rating:3.7, onTime:72, capacity:38, contact:'Mr. Gamal Farid', phone:'+20 127 501 6690', email:'gamal@nasrcasting.com' },
+];
+function findSupplier(id){ return SUPPLIERS.find(s => s.id===id); }
+
+const PROJECTS = [
+  { code:'PRJ-26001', name:'Industrial Conveyor', customer:'ABC Industrial Solutions', start:'2026-06-18', due:'2026-09-30', progress:63, status:'IN_PRODUCTION',
+    phases:{ Engineering:100, Material:90, Nesting:82, Fabrication:63, Assembly:30, QC:10, Delivery:0 } },
+  { code:'PRJ-26002', name:'Storage Tank Platform', customer:'Suez Cement Company', start:'2026-07-02', due:'2026-10-20', progress:48, status:'IN_PRODUCTION',
+    phases:{ Engineering:100, Material:74, Nesting:60, Fabrication:44, Assembly:20, QC:6, Delivery:0 } },
+  { code:'PRJ-26003', name:'Factory Maintenance Package', customer:'Delta Food Industries', start:'2026-08-11', due:'2026-10-05', progress:22, status:'NESTING',
+    phases:{ Engineering:88, Material:40, Nesting:35, Fabrication:12, Assembly:0, QC:0, Delivery:0 } },
+  { code:'PRJ-26004', name:'Dust Collector', customer:'Ezz Steel', start:'2026-06-30', due:'2026-09-25', progress:71, status:'IN_PRODUCTION',
+    phases:{ Engineering:100, Material:96, Nesting:90, Fabrication:70, Assembly:44, QC:22, Delivery:0 } },
+  { code:'PRJ-26005', name:'Mezzanine Steel Structure', customer:'Orascom Construction', start:'2026-08-20', due:'2026-11-15', progress:15, status:'MATERIAL',
+    phases:{ Engineering:70, Material:30, Nesting:10, Fabrication:2, Assembly:0, QC:0, Delivery:0 } },
+  { code:'PRJ-26006', name:'Bucket Elevator', customer:'Juhayna Food Industries', start:'2026-07-14', due:'2026-10-12', progress:55, status:'IN_PRODUCTION',
+    phases:{ Engineering:100, Material:80, Nesting:70, Fabrication:52, Assembly:24, QC:8, Delivery:0 } },
+  { code:'PRJ-26007', name:'Pressure Vessel Skid', customer:'El Sewedy Electric', start:'2026-05-28', due:'2026-09-18', progress:88, status:'QC',
+    phases:{ Engineering:100, Material:100, Nesting:100, Fabrication:94, Assembly:82, QC:58, Delivery:10 } },
+  { code:'PRJ-26008', name:'Screw Conveyor Set', customer:'Nile Steel Works', start:'2026-06-05', due:'2026-09-22', progress:79, status:'ASSEMBLY',
+    phases:{ Engineering:100, Material:100, Nesting:96, Fabrication:88, Assembly:64, QC:30, Delivery:4 } },
+  { code:'PRJ-26009', name:'Cable Tray System', customer:'Arab Contractors', start:'2026-07-25', due:'2026-10-30', progress:34, status:'OUTSOURCED',
+    phases:{ Engineering:92, Material:60, Nesting:48, Fabrication:22, Assembly:6, QC:0, Delivery:0 } },
+  { code:'PRJ-26010', name:'Machine Guarding Package', customer:'Elaraby Group', start:'2026-08-01', due:'2026-10-08', progress:42, status:'IN_PRODUCTION',
+    phases:{ Engineering:100, Material:70, Nesting:64, Fabrication:38, Assembly:14, QC:4, Delivery:0 } },
+  { code:'PRJ-26011', name:'Hopper & Chute Assembly', customer:'Alexandria Port Authority', start:'2026-08-24', due:'2026-11-20', progress:12, status:'MATERIAL',
+    phases:{ Engineering:64, Material:24, Nesting:8, Fabrication:0, Assembly:0, QC:0, Delivery:0 } },
+  { code:'PRJ-26012', name:'Access Platforms & Ladders', customer:'EgyptAir Technical Services', start:'2026-05-12', due:'2026-09-12', progress:94, status:'DELIVERY',
+    phases:{ Engineering:100, Material:100, Nesting:100, Fabrication:100, Assembly:96, QC:88, Delivery:60 } },
+];
+function findProject(code){ return PROJECTS.find(p => p.code===code); }
+
+const ASSEMBLIES = [
+  { code:'ASM-001',   name:'Conveyor Frame',           project:'PRJ-26001', parent:null,        completion:58, currentOp:'Welding' },
+  { code:'ASM-001.1', name:'Main Structure',           project:'PRJ-26001', parent:'ASM-001',   completion:64, currentOp:'Bending' },
+  { code:'ASM-001.2', name:'Leg Sets',                 project:'PRJ-26001', parent:'ASM-001',   completion:41, currentOp:'Laser Cut' },
+  { code:'ASM-002',   name:'Drive Unit Housing',       project:'PRJ-26001', parent:null,        completion:47, currentOp:'Machining' },
+  { code:'ASM-003',   name:'Belt Support Rollers Frame',project:'PRJ-26001', parent:null,       completion:72, currentOp:'QC' },
+  { code:'ASM-004',   name:'Guarding & Covers',        project:'PRJ-26001', parent:null,        completion:33, currentOp:'Powder Coat' },
+  { code:'ASM-020',   name:'Collector Body',           project:'PRJ-26004', parent:null,        completion:68, currentOp:'Welding' },
+  { code:'ASM-021',   name:'Hopper',                   project:'PRJ-26004', parent:null,        completion:55, currentOp:'Rolling' },
+  { code:'ASM-022',   name:'Support Frame',            project:'PRJ-26004', parent:null,        completion:40, currentOp:'Laser Cut' },
+];
+function findAssembly(code){ return ASSEMBLIES.find(a => a.code===code); }
+function projectAssemblies(pc){ return ASSEMBLIES.filter(a => a.project===pc); }
+
+/* Parts — the object that keeps one identity through the whole lifecycle.
+   ops: ordered operation route. FINAL_DIM_QC is always the mandatory last gate. */
+function mkPart(o){
+  const mat = findMat(o.grade, o.thk);
+  const unitKg = o.unitKg;
+  return {
+    id:o.id, desc:o.desc, project:o.project, assembly:o.assembly,
+    grade:o.grade, thk:o.thk, qty:o.qty, unitKg, weightKg:+(unitKg*o.qty).toFixed(1),
+    rev:o.rev, drawing:o.drawing || ('DRW-' + o.project.slice(4) + '-' + o.id.slice(2)),
+    cad:o.cad || (o.id + '_rev' + o.rev + '.step'),
+    ops:o.ops, opIndex:o.opIndex, status:o.status, machine:o.machine || null,
+    outsource:o.outsource || null, qcState:o.qcState || 'NONE', note:o.note || null,
+    matKey: mat ? mat.key : null,
+  };
+}
+const ROUTE_STD = ['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','Weld','FINAL_DIM_QC','Ready for Assembly'];
+const PARTS = [
+  mkPart({ id:'P-001245', desc:'Side Plate', project:'PRJ-26001', assembly:'ASM-001.1', grade:'S235JR', thk:6, qty:4, unitKg:18.4, rev:'B',
+    ops:ROUTE_STD, opIndex:2, status:'BLOCKED', machine:'TRUMPF TruLaser 5030', qcState:'NONE',
+    note:'Blocked at Material Reserved — 6 mm S235JR shortage of 1.7 t. Heat lot pending mill certificate.' }),
+  mkPart({ id:'P-001246', desc:'Base Plate', project:'PRJ-26001', assembly:'ASM-001.1', grade:'S235JR', thk:8, qty:2, unitKg:42.1, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Weld','FINAL_DIM_QC','Ready for Assembly'], opIndex:5, status:'IN_PRODUCTION', machine:'Welding Cell 1 · MIG', qcState:'NONE' }),
+  mkPart({ id:'P-001247', desc:'Corner Gusset', project:'PRJ-26001', assembly:'ASM-001.1', grade:'S235JR', thk:6, qty:8, unitKg:2.3, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','FINAL_DIM_QC','Ready for Assembly'], opIndex:7, status:'READY', qcState:'PASSED' }),
+  mkPart({ id:'P-001248', desc:'Cross Member', project:'PRJ-26001', assembly:'ASM-001.1', grade:'S355JR', thk:10, qty:6, unitKg:27.8, rev:'C',
+    ops:ROUTE_STD, opIndex:5, status:'IN_PRODUCTION', machine:'TRUMPF TruBend 7036', qcState:'NONE' }),
+  mkPart({ id:'P-001249', desc:'Top Rail', project:'PRJ-26001', assembly:'ASM-001.1', grade:'S355JR', thk:10, qty:2, unitKg:33.5, rev:'B',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','FINAL_DIM_QC','Ready for Assembly'], opIndex:6, status:'QC', machine:'CMM Inspection Bench', qcState:'PENDING' }),
+  mkPart({ id:'P-001250', desc:'Foot Pad', project:'PRJ-26001', assembly:'ASM-001.2', grade:'S235JR', thk:12, qty:8, unitKg:5.1, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Outsourced · Laser Cut','Drill','FINAL_DIM_QC','Ready for Assembly'], opIndex:3, status:'OUTSOURCED', outsource:'OUT-0261', qcState:'NONE' }),
+  mkPart({ id:'P-001251', desc:'Angle Bracket', project:'PRJ-26001', assembly:'ASM-001.2', grade:'SS304', thk:3, qty:12, unitKg:0.8, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','FINAL_DIM_QC','Ready for Assembly'], opIndex:1, status:'NOT_STARTED', qcState:'NONE' }),
+  mkPart({ id:'P-001252', desc:'Cover Panel', project:'PRJ-26001', assembly:'ASM-004', grade:'S235JR', thk:2, qty:4, unitKg:6.2, rev:'B',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Punch','Bend','Outsourced · Powder Coat','FINAL_DIM_QC','Ready for Assembly'], opIndex:6, status:'OUTSOURCED', outsource:'OUT-0263', qcState:'NONE' }),
+  mkPart({ id:'P-001260', desc:'Housing Wall', project:'PRJ-26001', assembly:'ASM-002', grade:'S235JR', thk:8, qty:4, unitKg:21.0, rev:'A',
+    ops:ROUTE_STD, opIndex:4, status:'IN_PRODUCTION', machine:'TRUMPF TruLaser 3030', qcState:'NONE' }),
+  mkPart({ id:'P-001261', desc:'Motor Mount Plate', project:'PRJ-26001', assembly:'ASM-002', grade:'S355JR', thk:15, qty:1, unitKg:48.0, rev:'B',
+    ops:['Engineering','BOM Released','Material Reserved','Outsourced · CNC Machining','FINAL_DIM_QC','Ready for Assembly'], opIndex:3, status:'OUTSOURCED', outsource:'OUT-0262', qcState:'NONE' }),
+  mkPart({ id:'P-001262', desc:'Shaft Cover', project:'PRJ-26001', assembly:'ASM-002', grade:'SS304', thk:3, qty:2, unitKg:3.4, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Punch','Bend','FINAL_DIM_QC','Ready for Assembly'], opIndex:6, status:'FAILED', machine:'CMM Inspection Bench', qcState:'FAILED',
+    note:'FINAL_DIM_QC failed — hole pattern +1.8 mm out of position. NCR-018 raised, rework in progress.' }),
+  mkPart({ id:'P-001263', desc:'Bearing Bracket', project:'PRJ-26001', assembly:'ASM-002', grade:'S355JR', thk:12, qty:2, unitKg:9.7, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','CNC Machining','Weld','FINAL_DIM_QC','Ready for Assembly'], opIndex:5, status:'IN_PRODUCTION', machine:'Haas VF-4', qcState:'NONE' }),
+  mkPart({ id:'P-001280', desc:'Mesh Guard Frame', project:'PRJ-26001', assembly:'ASM-004', grade:'S235JR', thk:3, qty:6, unitKg:7.9, rev:'B',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','Weld','Outsourced · Painting','FINAL_DIM_QC','Ready for Assembly'], opIndex:6, status:'IN_PRODUCTION', machine:'Welding Cell 2 · TIG', qcState:'NONE',
+    note:'NCR-017 open — weld porosity on 2 of 6 frames, in rework.' }),
+  mkPart({ id:'P-001281', desc:'Side Guard Panel', project:'PRJ-26001', assembly:'ASM-004', grade:'S235JR', thk:2, qty:10, unitKg:4.6, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Punch','Bend','Outsourced · Powder Coat','FINAL_DIM_QC','Ready for Assembly'], opIndex:4, status:'IN_PRODUCTION', machine:'TRUMPF TruPunch 5000', qcState:'NONE' }),
+  mkPart({ id:'P-001282', desc:'Access Door', project:'PRJ-26001', assembly:'ASM-004', grade:'S235JR', thk:2, qty:2, unitKg:9.1, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Punch','Bend','FINAL_DIM_QC','Ready for Assembly'], opIndex:7, status:'READY', qcState:'PASSED' }),
+  // PRJ-26004 Dust Collector
+  mkPart({ id:'P-002010', desc:'Body Panel', project:'PRJ-26004', assembly:'ASM-020', grade:'S235JR', thk:3, qty:8, unitKg:14.2, rev:'B',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','Weld','FINAL_DIM_QC','Ready for Assembly'], opIndex:6, status:'IN_PRODUCTION', machine:'Welding Cell 1 · MIG', qcState:'NONE' }),
+  mkPart({ id:'P-002011', desc:'Tube Sheet', project:'PRJ-26004', assembly:'ASM-020', grade:'S235JR', thk:10, qty:1, unitKg:88.0, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Drill','FINAL_DIM_QC','Ready for Assembly'], opIndex:6, status:'QC', machine:'CMM Inspection Bench', qcState:'PENDING' }),
+  mkPart({ id:'P-002012', desc:'Stiffener', project:'PRJ-26004', assembly:'ASM-020', grade:'S235JR', thk:5, qty:16, unitKg:3.1, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','FINAL_DIM_QC','Ready for Assembly'], opIndex:7, status:'READY', qcState:'PASSED' }),
+  mkPart({ id:'P-002020', desc:'Hopper Cone Segment', project:'PRJ-26004', assembly:'ASM-021', grade:'S235JR', thk:4, qty:6, unitKg:22.6, rev:'C',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Outsourced · Plate Rolling','Weld','FINAL_DIM_QC','Ready for Assembly'], opIndex:5, status:'OUTSOURCED', outsource:'OUT-0268', qcState:'NONE' }),
+  mkPart({ id:'P-002021', desc:'Flange Ring', project:'PRJ-26004', assembly:'ASM-021', grade:'S235JR', thk:12, qty:2, unitKg:31.4, rev:'A',
+    ops:ROUTE_STD, opIndex:4, status:'IN_PRODUCTION', machine:'TRUMPF TruLaser 5030', qcState:'NONE' }),
+  mkPart({ id:'P-002030', desc:'Support Leg', project:'PRJ-26004', assembly:'ASM-022', grade:'S355JR', thk:10, qty:4, unitKg:41.0, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Bend','Weld','FINAL_DIM_QC','Ready for Assembly'], opIndex:4, status:'IN_PRODUCTION', machine:'TRUMPF TruBend 7036', qcState:'NONE' }),
+  mkPart({ id:'P-002031', desc:'Base Plate', project:'PRJ-26004', assembly:'ASM-022', grade:'S355JR', thk:15, qty:4, unitKg:19.8, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','Drill','FINAL_DIM_QC','Ready for Assembly'], opIndex:1, status:'NOT_STARTED', qcState:'NONE' }),
+  mkPart({ id:'P-002032', desc:'Diagonal Brace', project:'PRJ-26004', assembly:'ASM-022', grade:'S235JR', thk:6, qty:8, unitKg:7.2, rev:'A',
+    ops:['Engineering','BOM Released','Material Reserved','Nested','Laser Cut','FINAL_DIM_QC','Ready for Assembly'], opIndex:0, status:'NOT_STARTED', qcState:'NONE' }),
+];
+function findPart(id){ return PARTS.find(p => p.id===id); }
+function assemblyParts(code){ return PARTS.filter(p => p.assembly===code); }
+function projectParts(pc){ return PARTS.filter(p => p.project===pc); }
+
+const OUTSOURCE = [
+  { id:'OUT-0261', rfq:'RFQ-0261', supplier:'SUP-01', project:'PRJ-26001', process:'Laser Cutting', partsCount:42, parts:['P-001250'], weightT:1.8, value:145000, actual:null, due:'2026-09-09', status:'AT_RISK', sent:'2026-08-22', eta:'2026-09-11', note:'Supplier delivery at risk — 2 days remaining. Nesting confirmed, machine time slipped one shift.' },
+  { id:'OUT-0262', rfq:'RFQ-0262', supplier:'SUP-03', project:'PRJ-26001', process:'CNC Machining', partsCount:6, parts:['P-001261'], weightT:0.9, value:88000, actual:86400, due:'2026-09-15', status:'QC', sent:'2026-08-25', eta:'2026-09-14' },
+  { id:'OUT-0263', rfq:'RFQ-0263', supplier:'SUP-07', project:'PRJ-26001', process:'Powder Coating', partsCount:60, parts:['P-001252','P-001281'], weightT:0.6, value:32000, actual:null, due:'2026-09-10', status:'DISPATCH', sent:'2026-08-28', eta:'2026-09-09' },
+  { id:'OUT-0264', rfq:'RFQ-0264', supplier:'SUP-02', project:'PRJ-26004', process:'Welding', partsCount:28, parts:[], weightT:2.4, value:176000, actual:null, due:'2026-09-18', status:'MATERIAL_CONFIRMED', sent:'2026-08-30', eta:'2026-09-17' },
+  { id:'OUT-0265', rfq:'RFQ-0265', supplier:'SUP-06', project:'PRJ-26009', process:'Hot-Dip Galvanizing', partsCount:120, parts:[], weightT:3.1, value:61000, actual:null, due:'2026-09-09', status:'RELEASED', sent:'2026-09-01', eta:'2026-09-12', note:'Overdue risk — bath scheduled 12 Sep, 3 days past customer need date.' },
+  { id:'OUT-0266', rfq:'RFQ-0266', supplier:'SUP-04', project:'PRJ-26003', process:'Laser Cutting', partsCount:54, parts:[], weightT:1.2, value:47000, actual:null, due:'2026-09-22', status:'RFQ_SENT', sent:'2026-09-05', eta:null },
+  { id:'OUT-0267', rfq:'RFQ-0267', supplier:'SUP-07', project:'PRJ-26001', process:'Painting', partsCount:18, parts:['P-001280'], weightT:0.4, value:21000, actual:null, due:'2026-09-20', status:'RELEASED', sent:'2026-09-04', eta:'2026-09-19' },
+  { id:'OUT-0268', rfq:'RFQ-0268', supplier:'SUP-05', project:'PRJ-26004', process:'Plate Rolling', partsCount:8, parts:['P-002020'], weightT:4.6, value:210000, actual:null, due:'2026-09-25', status:'MATERIAL_CONFIRMED', sent:'2026-08-27', eta:'2026-09-24' },
+  { id:'OUT-0269', rfq:'RFQ-0269', supplier:'SUP-01', project:'PRJ-26006', process:'Press Brake', partsCount:36, parts:[], weightT:0.7, value:29500, actual:null, due:'2026-09-14', status:'PRODUCTION', sent:'2026-08-24', eta:'2026-09-13' },
+  { id:'OUT-0270', rfq:'RFQ-0270', supplier:'SUP-04', project:'PRJ-26010', process:'Laser Cutting', partsCount:40, parts:[], weightT:1.1, value:38000, actual:37200, due:'2026-08-30', status:'RECEIVED', sent:'2026-08-10', eta:'2026-08-29' },
+];
+function findOut(id){ return OUTSOURCE.find(o => o.id===id || o.rfq===id); }
+
+const JOBS = [
+  { id:'PJ-4101', part:'P-001247', op:'Bend',    machine:'TRUMPF TruBend 7036', operator:'A. Salah',  qty:8, due:'2026-09-06', progress:100, col:'COMPLETE' },
+  { id:'PJ-4114', part:'P-001282', op:'Punch',   machine:'TRUMPF TruPunch 5000', operator:'K. Emad',  qty:2, due:'2026-09-05', progress:100, col:'COMPLETE' },
+  { id:'PJ-4102', part:'P-001246', op:'Weld',    machine:'Welding Cell 1 · MIG', operator:'M. Adel',  qty:2, due:'2026-09-09', progress:60,  col:'IN_PRODUCTION' },
+  { id:'PJ-4103', part:'P-001248', op:'Bend',    machine:'TRUMPF TruBend 7036', operator:'H. Nabil',  qty:6, due:'2026-09-10', progress:45,  col:'IN_PRODUCTION' },
+  { id:'PJ-4106', part:'P-001260', op:'Laser Cut',machine:'TRUMPF TruLaser 3030',operator:'S. Wael',  qty:4, due:'2026-09-11', progress:30,  col:'IN_PRODUCTION' },
+  { id:'PJ-4107', part:'P-001263', op:'Machining',machine:'Haas VF-4',           operator:'T. Gomaa',  qty:2, due:'2026-09-12', progress:20,  col:'IN_PRODUCTION' },
+  { id:'PJ-4108', part:'P-001281', op:'Punch',   machine:'TRUMPF TruPunch 5000', operator:'K. Emad',  qty:10,due:'2026-09-10', progress:55,  col:'IN_PRODUCTION' },
+  { id:'PJ-4112', part:'P-001280', op:'Weld',    machine:'Welding Cell 2 · TIG', operator:'R. Hany',  qty:6, due:'2026-09-13', progress:40,  col:'IN_PRODUCTION' },
+  { id:'PJ-4120', part:'P-002010', op:'Weld',    machine:'Welding Cell 1 · MIG', operator:'M. Adel',  qty:8, due:'2026-09-14', progress:35,  col:'IN_PRODUCTION' },
+  { id:'PJ-4104', part:'P-001249', op:'FINAL_DIM_QC', machine:'CMM Inspection Bench', operator:'R. Zaki', qty:2, due:'2026-09-08', progress:80, col:'QC' },
+  { id:'PJ-4121', part:'P-002011', op:'FINAL_DIM_QC', machine:'CMM Inspection Bench', operator:'R. Zaki', qty:1, due:'2026-09-09', progress:65, col:'QC' },
+  { id:'PJ-4109', part:'P-001251', op:'Laser Cut',machine:'TRUMPF TruLaser 5030', operator:'—',       qty:12,due:'2026-09-16', progress:0,   col:'READY' },
+  { id:'PJ-4110', part:'P-002031', op:'Laser Cut',machine:'Bystronic ByStar Fiber',operator:'—',      qty:4, due:'2026-09-17', progress:0,   col:'READY' },
+  { id:'PJ-4122', part:'P-002032', op:'Laser Cut',machine:'Bystronic ByStar Fiber',operator:'—',      qty:8, due:'2026-09-18', progress:0,   col:'READY' },
+  { id:'PJ-4105', part:'P-001245', op:'Laser Cut',machine:'TRUMPF TruLaser 5030', operator:'—',       qty:4, due:'2026-09-11', progress:0,   col:'BLOCKED', block:'Material shortage — 6 mm S235JR' },
+  { id:'PJ-4111', part:'P-001262', op:'FINAL_DIM_QC', machine:'CMM Inspection Bench', operator:'R. Zaki', qty:2, due:'2026-09-05', progress:100, col:'BLOCKED', block:'FINAL_DIM_QC failed — NCR-018' },
+];
+
+const QC = [
+  { id:'QC-3301', part:'P-001247', type:'FINAL_DIM_QC', result:'PASSED',  date:'2026-09-06', inspector:'R. Zaki',   note:'All critical dims within ±0.3 mm. Released to assembly.' },
+  { id:'QC-3302', part:'P-001249', type:'FINAL_DIM_QC', result:'PENDING', date:'2026-09-08', inspector:'R. Zaki',   note:'Scheduled — CMM programme loaded.' },
+  { id:'QC-3303', part:'P-001262', type:'FINAL_DIM_QC', result:'FAILED',  date:'2026-09-05', inspector:'R. Zaki',   note:'Hole pattern +1.8 mm out of position. NCR-018.' },
+  { id:'QC-3304', part:'P-001246', type:'IN_PROCESS',   result:'PASSED',  date:'2026-09-06', inspector:'N. Fahmy',  note:'Weld visual + root pass verified.' },
+  { id:'QC-3305', part:'P-001250', type:'INCOMING',     result:'PENDING', date:'2026-09-11', inspector:'N. Fahmy',  note:'Awaiting delivery from Cairo Precision (OUT-0261).' },
+  { id:'QC-3306', part:'P-001261', type:'INCOMING',     result:'PASSED',  date:'2026-09-04', inspector:'N. Fahmy',  note:'Machined faces within drawing. Cert received.' },
+  { id:'QC-3307', part:'P-001280', type:'IN_PROCESS',   result:'PENDING', date:'2026-09-07', inspector:'N. Fahmy',  note:'Re-inspect after porosity rework.' },
+  { id:'QC-3308', part:'P-002011', type:'FINAL_DIM_QC', result:'PENDING', date:'2026-09-09', inspector:'R. Zaki',   note:'Tube sheet drill pattern — full CMM report required.' },
+  { id:'QC-3309', part:'P-002012', type:'FINAL_DIM_QC', result:'PASSED',  date:'2026-09-05', inspector:'R. Zaki',   note:'Batch of 16 sampled per AQL. Pass.' },
+  { id:'QC-3310', part:'P-001282', type:'FINAL_DIM_QC', result:'PASSED',  date:'2026-09-04', inspector:'R. Zaki',   note:'Door fit & hinge line verified.' },
+];
+const QC_KPI = { pending:14, passed30:212, failed30:9, ncrOpen:6, rework:5 };
+
+const ISSUES = [
+  { id:'NCR-018', ref:'P-001262', refType:'part',     severity:'Critical', status:'Open',      opened:'2026-09-05', owner:'QC · R. Zaki',   title:'Dimensional: hole pattern +1.8 mm out of tolerance', assembly:'ASM-002' },
+  { id:'NCR-017', ref:'P-001280', refType:'part',     severity:'Major',    status:'In Rework', opened:'2026-09-03', owner:'Welding · R. Hany', title:'Weld porosity on 2 of 6 mesh guard frames', assembly:'ASM-004' },
+  { id:'NCR-016', ref:'SUP-04',   refType:'supplier', severity:'Major',    status:'Open',      opened:'2026-09-04', owner:'Procurement',     title:'Late material delivery against RFQ-0266', assembly:null },
+  { id:'NCR-015', ref:'P-001246', refType:'part',     severity:'Minor',    status:'Closed',    opened:'2026-08-29', owner:'QC · N. Fahmy',  title:'Surface scratch on base plate — reworked & re-inspected', assembly:'ASM-001.1' },
+  { id:'NCR-014', ref:'S235JR-6', refType:'material', severity:'Major',    status:'Open',      opened:'2026-09-02', owner:'Procurement',    title:'Mill certificate missing on heat lot H2291', assembly:null },
+  { id:'NCR-013', ref:'ASM-004',  refType:'assembly', severity:'Major',    status:'Open',      opened:'2026-09-06', owner:'Production',     title:'3 guard panels rejected at final dimensional QC', assembly:'ASM-004' },
+];
+function findIssue(id){ return ISSUES.find(i => i.id===id); }
+
+const NESTS = [
+  { id:'NEST-0261', project:'PRJ-26001', grade:'S235JR', thk:6,  sheetW:1500, sheetL:3000, parts:24, util:86.4, machine:'TRUMPF TruLaser 5030', status:'READY' },
+  { id:'NEST-0262', project:'PRJ-26001', grade:'S235JR', thk:8,  sheetW:1500, sheetL:3000, parts:12, util:79.2, machine:'TRUMPF TruLaser 5030', status:'RUNNING' },
+  { id:'NEST-0263', project:'PRJ-26004', grade:'S355JR', thk:10, sheetW:2000, sheetL:6000, parts:8,  util:91.1, machine:'Bystronic ByStar Fiber', status:'QUEUED' },
+  { id:'NEST-0264', project:'PRJ-26001', grade:'SS304',  thk:3,  sheetW:1250, sheetL:2500, parts:40, util:83.7, machine:'TRUMPF TruLaser 3030', status:'READY' },
+  { id:'NEST-0265', project:'PRJ-26003', grade:'S235JR', thk:2,  sheetW:1250, sheetL:2500, parts:60, util:68.0, machine:'TRUMPF TruPunch 5000', status:'BELOW_TARGET' },
+  { id:'NEST-0266', project:'PRJ-26004', grade:'S235JR', thk:12, sheetW:1500, sheetL:3000, parts:6,  util:74.5, machine:'TRUMPF TruLaser 5030', status:'RUNNING' },
+];
+function findNest(id){ return NESTS.find(n => n.id===id); }
+const NEST_TARGET = 80;
+
+const FLOW = [
+  { key:'ENGINEERING', count:38,  delayed:4,  status:'ok'   },
+  { key:'MATERIAL',    count:210, delayed:12, status:'warn' },
+  { key:'NESTING',     count:96,  delayed:3,  status:'ok'   },
+  { key:'CUTTING',     count:142, delayed:18, status:'crit' },
+  { key:'BENDING',     count:96,  delayed:7,  status:'ok'   },
+  { key:'WELDING',     count:73,  delayed:4,  status:'ok'   },
+  { key:'QC',          count:41,  delayed:6,  status:'warn' },
+  { key:'ASSEMBLY',    count:24,  delayed:2,  status:'ok'   },
+];
+
+const RISKS = [
+  { sev:'crit', title:'Material shortage — 6 mm S235JR', meta:'1.7 t short · blocks 4× Side Plate at cut', tag:'P-001245', href:'/parts/P-001245' },
+  { sev:'warn', title:'Supplier delivery at risk', meta:'Cairo Precision Fabrication · 2 days remaining', tag:'OUT-0261', href:'/outsourcing/OUT-0261' },
+  { sev:'crit', title:'QC failure — 3 parts rejected', meta:'Guarding & Covers · dimensional non-conformance', tag:'ASM-004', href:'/projects/PRJ-26001/asm/ASM-004' },
+  { sev:'warn', title:'Nesting utilisation below target', meta:'68% vs 80% target · 2 mm S235JR', tag:'PRJ-26003', href:'/nesting/NEST-0265' },
+  { sev:'crit', title:'Material shortage — 3 mm SS316', meta:'0.3 t short · blocks Pressure Vessel Skid', tag:'PRJ-26007', href:'/materials' },
+  { sev:'warn', title:'Galvanizing job overdue risk', meta:'Borg El Arab · bath 3 days past need date', tag:'OUT-0265', href:'/outsourcing/OUT-0265' },
+  { sev:'warn', title:'Open critical NCR', meta:'Shaft Cover · hole pattern out of tolerance', tag:'NCR-018', href:'/issues' },
+];
+
+/* headline KPIs (curated to the operations snapshot) */
+const KPIS = [
+  { label:'Active Projects',      value:'12',        foot:'+2 vs last month', dir:'up',   spark:[8,9,9,10,10,11,11,12] },
+  { label:'Parts in Production',   value:'486',       foot:'+34 this week',    dir:'up',   spark:[410,422,431,448,455,463,470,486] },
+  { label:'Outsourced Parts',     value:'74',        foot:'across 9 RFQs',    dir:'flat', spark:[52,58,61,63,66,68,71,74] },
+  { label:'Material Exposure',    value:'EGP 1.84M', foot:'open reservations',dir:'flat', spark:[1.4,1.5,1.55,1.6,1.7,1.72,1.8,1.84] },
+  { label:'At Risk',              value:'18',        foot:'6 critical · 12 watch', dir:'up', spark:[9,11,10,13,14,15,16,18] },
+  { label:'On-Time Delivery',     value:'87%',       foot:'-3% vs target 90%', dir:'down', spark:[82,85,84,88,90,86,89,87] },
+];
+const ONTIME_TREND = [82,84,83,86,88,85,89,90,86,88,89,87];
+const OUT_SPEND = [
+  { k:'Plate Rolling', v:210000 }, { k:'Laser Cutting', v:230000 }, { k:'Welding', v:176000 },
+  { k:'CNC Machining', v:88000 }, { k:'Powder / Paint', v:74000 }, { k:'Galvanizing', v:61000 },
+];
+const EXPOSURE_BY_GRADE = [
+  { k:'S235JR', v:642000 }, { k:'S355JR', v:548000 }, { k:'SS304', v:398000 }, { k:'SS316', v:252000 },
+];
+
+/* global search index — one part number connects the whole workflow */
+function buildSearchIndex(){
+  const idx = [];
+  PROJECTS.forEach(p => idx.push({ type:'Project', label:p.code, sub:p.name + ' · ' + p.customer, code:p.code, href:'/projects/' + p.code, icon:'projects' }));
+  ASSEMBLIES.forEach(a => idx.push({ type:'Assembly', label:a.code, sub:a.name + ' · ' + a.project, code:a.code, href:'/projects/' + a.project + '/asm/' + a.code, icon:'bom' }));
+  PARTS.forEach(p => idx.push({ type:'Part', label:p.id, sub:p.desc + ' · ' + p.grade + ' ' + p.thk + ' mm · ' + p.assembly, code:p.id, href:'/parts/' + p.id, icon:'parts' }));
+  OUTSOURCE.forEach(o => idx.push({ type:'Outsourcing', label:o.id, sub:findSupplier(o.supplier).name + ' · ' + o.process, code:o.rfq, href:'/outsourcing/' + o.id, icon:'outsourcing' }));
+  NESTS.forEach(n => idx.push({ type:'Nesting', label:n.id, sub:n.grade + ' ' + n.thk + ' mm · ' + n.machine, code:n.id, href:'/nesting/' + n.id, icon:'nesting' }));
+  MATERIALS.forEach(m => idx.push({ type:'Material', label:m.grade + ' · ' + m.thk + ' mm', sub:m.family + (m.shortage>0 ? ' · shortage ' + m.shortage + ' t' : ' · in stock'), code:m.key, href:'/materials', icon:'materials' }));
+  SUPPLIERS.forEach(s => idx.push({ type:'Supplier', label:s.name, sub:s.city + ' · ' + s.processes.join(', '), code:s.id, href:'/suppliers', icon:'suppliers' }));
+  ISSUES.forEach(i => idx.push({ type:'Issue', label:i.id, sub:i.title, code:i.id, href:'/issues', icon:'issues' }));
+  return idx;
+}
+const SEARCH_INDEX = buildSearchIndex();
+/* parts that reference a given part number across every module — the OSTA connective tissue */
+function connectionsFor(pid){
+  const part = findPart(pid); if(!part) return [];
+  const out = [];
+  const proj = findProject(part.project); const asm = findAssembly(part.assembly);
+  if(proj) out.push({ type:'Project', label:proj.code, sub:proj.name, href:'/projects/' + proj.code, icon:'projects' });
+  if(asm) out.push({ type:'Assembly', label:asm.code, sub:asm.name, href:'/projects/' + part.project + '/asm/' + asm.code, icon:'bom' });
+  out.push({ type:'BOM', label:'BOM line', sub:part.qty + '× · ' + part.grade + ' ' + part.thk + ' mm · Rev ' + part.rev, href:'/bom', icon:'bom' });
+  const mat = findMat(part.grade, part.thk);
+  if(mat) out.push({ type:'Material', label:mat.grade + ' ' + mat.thk + ' mm', sub: mat.shortage>0 ? 'Shortage ' + mat.shortage + ' t' : 'Available ' + (mat.avail-mat.reserved).toFixed(1) + ' t', href:'/materials', icon:'materials' });
+  const nest = NESTS.find(n => n.grade===part.grade && n.thk===part.thk && n.project===part.project);
+  if(nest) out.push({ type:'Nesting', label:nest.id, sub:nest.util + '% utilisation · ' + nest.machine, href:'/nesting/' + nest.id, icon:'nesting' });
+  const job = JOBS.find(j => j.part===pid);
+  if(job) out.push({ type:'Production', label:job.id, sub:job.op + ' · ' + job.machine + ' · ' + job.progress + '%', href:'/production', icon:'production' });
+  if(part.outsource){ const o = findOut(part.outsource); if(o) out.push({ type:'Outsourcing', label:o.id, sub:findSupplier(o.supplier).name + ' · ' + o.process, href:'/outsourcing/' + o.id, icon:'outsourcing' }); }
+  const qc = QC.filter(q => q.part===pid);
+  qc.forEach(q => out.push({ type:'QC', label:q.id, sub:q.type + ' · ' + q.result, href:'/qc', icon:'qc' }));
+  const iss = ISSUES.filter(i => i.ref===pid);
+  iss.forEach(i => out.push({ type:'Issue', label:i.id, sub:i.title, href:'/issues', icon:'issues' }));
+  return out;
+}
+
+/* ============================== primitives ============================== */
+const ToastCtx = createContext(() => {});
+function useToast(){ return useContext(ToastCtx); }
+function ToastHost({ children }){
+  const [items, setItems] = useState([]);
+  const push = useCallback((t) => {
+    const id = Math.random().toString(36).slice(2);
+    setItems(x => [...x, { id, tone:'ok', ...(typeof t === 'string' ? { title:t } : t) }]);
+    setTimeout(() => setItems(x => x.filter(i => i.id !== id)), 3600);
+  }, []);
+  return (
+    <ToastCtx.Provider value={push}>
+      {children}
+      <div className="toasts">
+        {items.map(t => {
+          const c = toneColor(t.tone);
+          return (
+            <div key={t.id} className="toast">
+              <Icon n={t.tone==='crit' ? 'issues' : t.tone==='warn' ? 'clock' : 'check'} style={{ color:c }}/>
+              <div><div className="tt">{t.title}</div>{t.desc ? <div className="td">{t.desc}</div> : null}</div>
+            </div>
+          );
+        })}
+      </div>
+    </ToastCtx.Provider>
+  );
+}
+
+function Pill({ tone, children, sq }){
+  const c = toneColor(tone);
+  return <span className={cx('pill', sq && 'sq')} style={{ color:c, background:hexA(c,0.13), borderColor:hexA(c,0.30) }}>
+    <span className="dot" style={{ background:c }}/>{children}</span>;
+}
+function MfgStatus({ s, sq }){
+  const m = MFG[s] || { label:s, tone:'idle' };
+  return <Pill tone={m.tone} sq={sq}>{m.label}</Pill>;
+}
+function ProjStatus({ s }){
+  const m = PROJ_STATUS[s] || { label:s, tone:'idle' };
+  return <Pill tone={m.tone}>{m.label}</Pill>;
+}
+function Bar({ value, tone, tall }){
+  const c = tone ? toneColor(tone) : 'var(--accent)';
+  return <div className={cx('bar', tall && 'tall')}><i style={{ width:Math.max(0,Math.min(100,value)) + '%', background:c }}/></div>;
+}
+function Panel({ title, actions, children, pad }){
+  return (
+    <section className="panel">
+      {title ? <div className="panel-h"><h3>{title}</h3>{actions ? <div className="row" style={{ gap:8 }}>{actions}</div> : null}</div> : null}
+      <div className={cx('panel-b', pad===false && 'flush')}>{children}</div>
+    </section>
+  );
+}
+function Empty({ icon, title, hint, action }){
+  return (
+    <div className="empty">
+      <Icon n={icon || 'box'} size={26}/>
+      <b>{title}</b>
+      {hint ? <p>{hint}</p> : null}
+      {action || null}
+    </div>
+  );
+}
+function PageHead({ title, sub, children }){
+  return (
+    <div className="page-head">
+      <div><h1 className="h1">{title}</h1>{sub ? <div className="sub">{sub}</div> : null}</div>
+      {children ? <div className="actions">{children}</div> : null}
+    </div>
+  );
+}
+function Crumbs({ items }){
+  return (
+    <nav className="crumbs">
+      {items.map((c, i) => (
+        <React.Fragment key={i}>
+          {i > 0 ? <Icon n="chevR"/> : null}
+          {c.href && i < items.length - 1
+            ? <A href={c.href}>{c.label}</A>
+            : <span className="cur">{c.label}</span>}
+        </React.Fragment>
+      ))}
+    </nav>
+  );
+}
+
+/* tiny SVG charts */
+function Spark({ data, w, h, color }){
+  w = w || 72; h = h || 22; color = color || 'var(--accent)';
+  const mn = Math.min(...data), mx = Math.max(...data), rng = mx - mn || 1;
+  const pts = data.map((v, i) => [i/(data.length-1)*w, h - ((v-mn)/rng)*(h-3) - 1.5]);
+  const d = pts.map((p,i) => (i? 'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  return (
+    <svg width={w} height={h} viewBox={'0 0 ' + w + ' ' + h} fill="none" aria-hidden="true">
+      <path d={d} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r="2" fill={color}/>
+    </svg>
+  );
+}
+function BarsH({ rows, unit, fmt }){
+  const mx = Math.max(...rows.map(r => r.v)) || 1;
+  return (
+    <div className="stack" style={{ gap:10 }}>
+      {rows.map((r, i) => (
+        <div key={i} style={{ display:'grid', gridTemplateColumns:'130px 1fr 78px', alignItems:'center', gap:12 }}>
+          <span className="dim" style={{ fontSize:12 }}>{r.k}</span>
+          <div className="bar tall"><i style={{ width:(r.v/mx*100) + '%', background: r.tone ? toneColor(r.tone) : 'var(--accent)' }}/></div>
+          <span className="mono tnum" style={{ fontSize:11, textAlign:'right', color:'var(--ink-2)' }}>{fmt ? fmt(r.v) : fmtInt(r.v) + (unit ? ' ' + unit : '')}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+function AreaTrend({ data, target, height }){
+  const w = 520, h = height || 150, pl = 6, pr = 6, pt = 10, pb = 18;
+  const mn = Math.min(...data, target || Infinity) - 4;
+  const mx = Math.max(...data, target || 0) + 4;
+  const rng = mx - mn || 1;
+  const X = i => pl + i/(data.length-1)*(w-pl-pr);
+  const Y = v => pt + (1 - (v-mn)/rng)*(h-pt-pb);
+  const line = data.map((v,i) => (i? 'L':'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join(' ');
+  const area = line + ' L ' + X(data.length-1).toFixed(1) + ' ' + (h-pb) + ' L ' + X(0).toFixed(1) + ' ' + (h-pb) + ' Z';
+  return (
+    <svg viewBox={'0 0 ' + w + ' ' + h} width="100%" preserveAspectRatio="none" style={{ display:'block' }}>
+      <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#4C9AFF" stopOpacity="0.28"/><stop offset="1" stopColor="#4C9AFF" stopOpacity="0"/>
+      </linearGradient></defs>
+      {[0,0.5,1].map((f,i) => <line key={i} x1={pl} x2={w-pr} y1={pt + f*(h-pt-pb)} y2={pt + f*(h-pt-pb)} stroke="#252A32" strokeWidth="1"/>)}
+      {target ? <line x1={pl} x2={w-pr} y1={Y(target)} y2={Y(target)} stroke="#35C88F" strokeWidth="1" strokeDasharray="4 4"/> : null}
+      {target ? <text x={w-pr} y={Y(target)-4} textAnchor="end" fontSize="9" fill="#35C88F">target {target}%</text> : null}
+      <path d={area} fill="url(#ag)"/>
+      <path d={line} fill="none" stroke="#4C9AFF" strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx={X(data.length-1)} cy={Y(data[data.length-1])} r="3" fill="#4C9AFF"/>
+      <text x={pl} y={h-5} fontSize="9" fill="#6D7681">12 weeks ago</text>
+      <text x={w-pr} y={h-5} textAnchor="end" fontSize="9" fill="#6D7681">now</text>
+    </svg>
+  );
+}
+
+/* nesting sheet visual — illustrative shelf pack, not a real nest */
+function SheetView({ nest, big }){
+  const seed = parseInt(nest.id.replace(/\D/g,''), 10) || 1;
+  const rng = mulberry32(seed);
+  const W = big ? 640 : 380;
+  const scale = W / nest.sheetL;
+  const H = nest.sheetW * scale;
+  const pad = 6, gap = 5;
+  const rects = [];
+  let x = pad, y = pad, rowH = 0;
+  for (let i = 0; i < nest.parts; i++){
+    const pw = (28 + rng()*70) * (big ? 1.5 : 1);
+    const ph = (22 + rng()*54) * (big ? 1.5 : 1);
+    if (x + pw > W - pad){ x = pad; y += rowH + gap; rowH = 0; }
+    if (y + ph > H - pad) break;
+    rects.push({ x, y, pw, ph });
+    x += pw + gap; rowH = Math.max(rowH, ph);
+  }
+  return (
+    <svg viewBox={'0 0 ' + W + ' ' + H} width="100%" style={{ display:'block', maxHeight: big ? 320 : 200 }}>
+      <rect x="0.5" y="0.5" width={W-1} height={H-1} fill="#0E1116" stroke="#2F353F"/>
+      {rects.map((r, i) => (
+        <rect key={i} x={r.x} y={r.y} width={r.pw} height={r.ph} rx="1.5"
+          fill={hexA('#4C9AFF', 0.16)} stroke="#4C9AFF" strokeWidth="1" strokeOpacity="0.55"/>
+      ))}
+      <text x={W-6} y={H-6} textAnchor="end" fontSize="9" fill="#6D7681" fontFamily="var(--mono)">
+        {nest.sheetW} × {nest.sheetL} mm · {nest.grade} {nest.thk} mm
+      </text>
+    </svg>
+  );
+}
+
+/* ============================== command palette ============================== */
+function CommandPalette({ open, onClose }){
+  const [q, setQ] = useState('');
+  const [sel, setSel] = useState(0);
+  const inputRef = useRef(null);
+  useEffect(() => { if (open){ setQ(''); setSel(0); setTimeout(() => inputRef.current && inputRef.current.focus(), 20); } }, [open]);
+  const results = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return [];
+    return SEARCH_INDEX
+      .map(it => {
+        const hay = (it.label + ' ' + it.sub + ' ' + it.type + ' ' + (it.code||'')).toLowerCase();
+        let score = -1;
+        if (hay.includes(s)) score = it.label.toLowerCase().includes(s) ? 3 : 1;
+        return { it, score };
+      })
+      .filter(r => r.score >= 0)
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 24)
+      .map(r => r.it);
+  }, [q]);
+  const groups = useMemo(() => {
+    const g = {};
+    results.forEach(r => { (g[r.type] = g[r.type] || []).push(r); });
+    return g;
+  }, [results]);
+  const flat = results;
+  useEffect(() => {
+    if (!open) return;
+    const on = (e) => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowDown'){ e.preventDefault(); setSel(s => Math.min(s + 1, flat.length - 1)); }
+      else if (e.key === 'ArrowUp'){ e.preventDefault(); setSel(s => Math.max(s - 1, 0)); }
+      else if (e.key === 'Enter' && flat[sel]){ go(flat[sel].href); onClose(); }
+    };
+    window.addEventListener('keydown', on);
+    return () => window.removeEventListener('keydown', on);
+  }, [open, flat, sel, onClose]);
+  if (!open) return null;
+  let running = -1;
+  return (
+    <div className="cmdk-ov" onMouseDown={onClose}>
+      <div className="cmdk" onMouseDown={e => e.stopPropagation()}>
+        <div className="cmdk-in">
+          <Icon n="search"/>
+          <input ref={inputRef} value={q} onChange={e => { setQ(e.target.value); setSel(0); }}
+            placeholder="Search parts, projects, RFQs, materials…  e.g. P-001245"/>
+          <span className="cmdk-item ci-code" style={{ padding:'2px 6px' }}>ESC</span>
+        </div>
+        <div className="cmdk-res">
+          {!q.trim() ? (
+            <div className="cmdk-hint">
+              One part number connects the whole workflow.<br/>Try <code>P-001245</code>, <code>PRJ-26001</code>, <code>OUT-0261</code> or <code>S235JR</code>.
+            </div>
+          ) : flat.length === 0 ? (
+            <div className="cmdk-hint">No matches for “{q}”.</div>
+          ) : (
+            Object.keys(groups).map(gk => (
+              <div key={gk}>
+                <div className="cmdk-grp">{gk}</div>
+                {groups[gk].map(it => {
+                  running += 1; const idx = running;
+                  return (
+                    <div key={it.label + it.href} className={cx('cmdk-item', idx === sel && 'sel')}
+                      onMouseEnter={() => setSel(idx)}
+                      onClick={() => { go(it.href); onClose(); }}>
+                      <Icon n={it.icon}/>
+                      <div className="ci-main">
+                        <div className="ci-label mono">{it.label}</div>
+                        <div className="ci-sub">{it.sub}</div>
+                      </div>
+                      <Icon n="cornerR" size={13}/>
+                    </div>
+                  );
+                })}
+              </div>
+            ))
+          )}
+        </div>
+        <div className="cmdk-foot">
+          <span>↑ ↓ navigate</span><span>↵ open</span><span>esc close</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== chrome ============================== */
+const NAV = [
+  { group:'Command Center', items:[
+    { label:'Dashboard', icon:'dashboard', href:'/' },
+    { label:'Projects', icon:'projects', href:'/projects' },
+    { label:'Production', icon:'production', href:'/production' },
+    { label:'Outsourcing', icon:'outsourcing', href:'/outsourcing' },
+  ]},
+  { group:'Engineering', items:[
+    { label:'BOM', icon:'bom', href:'/bom' },
+    { label:'Parts', icon:'parts', href:'/parts' },
+    { label:'CAD / CAM', icon:'cadcam', href:'/cadcam' },
+    { label:'Nesting', icon:'nesting', href:'/nesting' },
+  ]},
+  { group:'Materials', items:[
+    { label:'Materials', icon:'materials', href:'/materials' },
+    { label:'Inventory', icon:'inventory', href:'/inventory' },
+    { label:'Suppliers', icon:'suppliers', href:'/suppliers' },
+  ]},
+  { group:'Quality', items:[
+    { label:'QC', icon:'qc', href:'/qc' },
+    { label:'NCR / Issues', icon:'issues', href:'/issues' },
+  ]},
+  { group:'System', items:[
+    { label:'Analytics', icon:'analytics', href:'/analytics' },
+    { label:'Settings', icon:'settings', href:'/settings' },
+  ]},
+];
+function Sidebar({ path, onNavigate }){
+  const active = (href) => href === '/' ? (path === '/' || path === '') : path.startsWith(href);
+  return (
+    <aside className="side">
+      <A href="/" className="brand" onClick={onNavigate}>
+        <span className="mark">O</span>
+        <span><b>OSTA</b><span>Fabrication OS</span></span>
+      </A>
+      <nav className="nav">
+        {NAV.map(g => (
+          <div className="navgroup" key={g.group}>
+            <div className="eyebrow" style={{ marginBottom:6 }}>{g.group}</div>
+            {g.items.map(it => (
+              <A key={it.href} href={it.href} className={cx(active(it.href) && 'on')} onClick={onNavigate}>
+                <Icon n={it.icon}/><span>{it.label}</span>
+              </A>
+            ))}
+          </div>
+        ))}
+      </nav>
+      <div className="side-foot">
+        <b>OSTA MVP</b>
+        <span>Operations System Assistant</span>
+      </div>
+    </aside>
+  );
+}
+function Topbar({ crumbs, onSearch, onMenu }){
+  const dateStr = TODAY.toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+  return (
+    <header className="topbar">
+      <button className="tb-ic" onClick={onMenu} style={{ display:'none' }} data-mobilemenu><Icon n="menu"/></button>
+      <Crumbs items={crumbs}/>
+      <div className="spacer"/>
+      <span className="tb-date">{dateStr}</span>
+      <div className="tb-search" onClick={onSearch} role="button" tabIndex={0}>
+        <Icon n="search"/><span>Search</span><kbd>⌘K</kbd>
+      </div>
+      <div className="tb-ic"><Icon n="bell"/><span className="badge"/></div>
+      <div className="avatar" title="Operations Manager">OM</div>
+    </header>
+  );
+}
+
+/* breadcrumb resolver */
+function resolveCrumbs(segs){
+  const base = [{ label:'OSTA', href:'/' }];
+  if (segs.length === 0) return [{ label:'Command Center' }];
+  const [a, b, c, d] = segs;
+  const map = {
+    projects:'Projects', production:'Production', outsourcing:'Outsourcing', bom:'BOM',
+    parts:'Parts', cadcam:'CAD / CAM', nesting:'Nesting', materials:'Materials',
+    inventory:'Inventory', suppliers:'Suppliers', qc:'QC', issues:'NCR / Issues',
+    analytics:'Analytics', settings:'Settings',
+  };
+  if (a === 'projects'){
+    const out = [...base, { label:'Projects', href:'/projects' }];
+    if (b){
+      const p = findProject(b);
+      out.push({ label: p ? p.code : b, href:'/projects/' + b });
+      if (c === 'asm' && d){
+        const asm = findAssembly(d);
+        out.push({ label: asm ? asm.code : d });
+      } else if (c && c !== 'overview'){
+        out.push({ label: c.charAt(0).toUpperCase() + c.slice(1) });
+      }
+    }
+    return out;
+  }
+  if (a === 'parts' && b){
+    const p = findPart(b);
+    const out = [...base, { label:'Parts', href:'/parts' }];
+    if (p){
+      out.push({ label:p.project, href:'/projects/' + p.project });
+      out.push({ label:p.assembly, href:'/projects/' + p.project + '/asm/' + p.assembly });
+    }
+    out.push({ label: b });
+    return out;
+  }
+  if (a === 'outsourcing'){
+    const out = [...base, { label:'Outsourcing', href:'/outsourcing' }];
+    if (b) out.push({ label:b });
+    return out;
+  }
+  if (a === 'nesting'){
+    const out = [...base, { label:'Nesting', href:'/nesting' }];
+    if (b) out.push({ label:b });
+    return out;
+  }
+  return [...base, { label: map[a] || a }];
+}
+
+/* ============================== page · dashboard ============================== */
+function FlowStages(){
+  return (
+    <div className="flow">
+      {FLOW.map((s, i) => {
+        const c = toneColor(s.status);
+        const pct = Math.max(8, 100 - (s.delayed / s.count) * 320);
+        return (
+          <div key={s.key} className={cx('stage', s.status==='crit' && 'bottleneck')}>
+            <span className="s-top" style={{ background: hexA(c, 0.9) }}/>
+            {i > 0 ? <span className="arrow"><Icon n="chevR"/></span> : null}
+            <span className="s-name">{s.key}</span>
+            <span className="s-count tnum">{s.count}</span>
+            <span className="s-delay" style={{ color: s.delayed > 8 ? 'var(--crit)' : s.delayed > 0 ? 'var(--warn)' : 'var(--ink-3)' }}>
+              {s.delayed} delayed
+            </span>
+            <Bar value={pct} tone={s.status === 'crit' ? 'crit' : s.status === 'warn' ? 'warn' : 'ok'}/>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+function Dashboard(){
+  return (
+    <div className="page">
+      <PageHead title="Command Center" sub="Manufacturing operations at a glance">
+        <A href="/projects" className="btn ghost"><Icon n="projects"/>All projects</A>
+        <A href="/analytics" className="btn"><Icon n="analytics"/>Analytics</A>
+      </PageHead>
+
+      <div className="kpi-row" style={{ marginBottom:12 }}>
+        {KPIS.map(k => (
+          <div className="kpi" key={k.label}>
+            <span className="k-label">{k.label}</span>
+            <span className="k-val">{k.value}</span>
+            <span className="k-foot">
+              <span className={k.dir === 'up' ? 'up' : k.dir === 'down' ? 'down' : ''}>
+                {k.dir === 'up' ? <Icon n="trendUp"/> : k.dir === 'down' ? <Icon n="trendDown"/> : <Icon n="dot"/>}
+              </span>
+              {k.foot}
+            </span>
+            <span className="k-spark"><Spark data={k.spark} color={k.dir === 'down' ? '#E0A63C' : '#4C9AFF'}/></span>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginBottom:12 }}>
+        <Panel title="Production Flow" actions={<span className="chip"><span className="dot" style={{ width:6, height:6, borderRadius:9, background:'var(--crit)' }}/>Bottleneck · Cutting</span>}>
+          <FlowStages/>
+          <div className="muted" style={{ fontSize:11.5, marginTop:12 }}>
+            Engineering → Material → Nesting → Cutting → Bending → Welding → QC → Assembly · counts are work items currently at each stage
+          </div>
+        </Panel>
+      </div>
+
+      <div className="c7-5" style={{ marginBottom:12 }}>
+        <Panel title="Operational Risks" actions={<A href="/issues" className="btn ghost sm">Open register<Icon n="arrowR"/></A>}>
+          <div className="stack" style={{ gap:8 }}>
+            {RISKS.map((r, i) => (
+              <A key={i} href={r.href} className="risk">
+                <span className="rdot" style={{ background: toneColor(r.sev) }}/>
+                <span className="rmain">
+                  <span className="rtitle">{r.title}</span>
+                  <span className="rmeta" style={{ display:'block' }}>{r.meta}</span>
+                </span>
+                <span className="rtag">{r.tag}</span>
+                <Icon n="chevR" size={14} cls="muted"/>
+              </A>
+            ))}
+          </div>
+        </Panel>
+        <div className="stack">
+          <Panel title="On-Time Delivery">
+            <AreaTrend data={ONTIME_TREND} target={90} height={130}/>
+            <div className="between" style={{ marginTop:8 }}>
+              <span className="muted" style={{ fontSize:11.5 }}>Rolling 12-week completion vs promised date</span>
+              <span className="mono" style={{ fontSize:12 }}>87%</span>
+            </div>
+          </Panel>
+          <Panel title="Outsourcing Snapshot">
+            <div className="stack" style={{ gap:9 }}>
+              {[
+                { k:'In production', v:2, tone:'info' },
+                { k:'Awaiting material', v:2, tone:'warn' },
+                { k:'In QC / dispatch', v:2, tone:'info' },
+                { k:'At risk / overdue', v:2, tone:'crit' },
+                { k:'RFQ sent', v:1, tone:'idle' },
+              ].map(r => (
+                <div className="between" key={r.k}>
+                  <span style={{ fontSize:12 }}><Pill tone={r.tone}>{r.k}</Pill></span>
+                  <span className="mono tnum" style={{ fontSize:12 }}>{r.v}</span>
+                </div>
+              ))}
+              <A href="/outsourcing" className="btn ghost sm" style={{ marginTop:2 }}>Outsourcing Control Center<Icon n="arrowR"/></A>
+            </div>
+          </Panel>
+        </div>
+      </div>
+
+      <Panel title="Active Projects" pad={false}
+        actions={<A href="/projects" className="btn ghost sm">View all 12<Icon n="arrowR"/></A>}>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr><th>Project</th><th>Customer</th><th>Progress</th><th className="num">Parts</th><th className="num">Outsourced</th><th>Delivery</th><th>Status</th></tr></thead>
+            <tbody>
+              {PROJECTS.slice(0, 6).map(p => {
+                const d = daysFromToday(p.due);
+                return (
+                  <tr key={p.code} onClick={() => go('/projects/' + p.code)}>
+                    <td><span className="code">{p.code}</span><div className="muted" style={{ fontSize:11 }}>{p.name}</div></td>
+                    <td className="dim">{p.customer}</td>
+                    <td style={{ minWidth:150 }}><div className="between" style={{ gap:8 }}><Bar value={p.progress} tone={p.progress > 80 ? 'ok' : 'info'}/><span className="mono" style={{ fontSize:11 }}>{p.progress}%</span></div></td>
+                    <td className="num">{projectParts(p.code).length || '—'}</td>
+                    <td className="num">{OUTSOURCE.filter(o => o.project === p.code).length || '—'}</td>
+                    <td><span className="mono" style={{ fontSize:11.5 }}>{fmtDateShort(p.due)}</span> <span style={{ fontSize:10.5, color: d < 7 ? 'var(--crit)' : 'var(--ink-3)' }}>{d < 0 ? Math.abs(d) + 'd late' : d + 'd'}</span></td>
+                    <td><ProjStatus s={p.status}/></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ============================== page · projects ============================== */
+function Projects(){
+  const [f, setF] = useState('all');
+  const rows = PROJECTS.filter(p => f === 'all' ? true : f === 'risk' ? ['MATERIAL','DELAYED'].includes(p.status) || daysFromToday(p.due) < 10 : p.status === f);
+  return (
+    <div className="page">
+      <PageHead title="Projects" sub={PROJECTS.length + ' projects · ' + PROJECTS.filter(p => p.status !== 'DELIVERY').length + ' in the shop'}>
+        <button className="btn ghost"><Icon n="filter"/>Filter</button>
+        <button className="btn primary"><Icon n="plus"/>New project</button>
+      </PageHead>
+      <div className="filterbar">
+        <div className="seg">
+          {[['all','All'],['IN_PRODUCTION','In Production'],['MATERIAL','Material'],['QC','Quality'],['ASSEMBLY','Assembly'],['risk','At Risk']].map(([k,l]) => (
+            <button key={k} className={cx(f === k && 'on')} onClick={() => setF(k)}>{l}</button>
+          ))}
+        </div>
+        <span className="muted" style={{ fontSize:11.5 }}>{rows.length} shown</span>
+      </div>
+      <Panel pad={false}>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr>
+              <th>Project</th><th>Customer</th><th>Progress</th><th className="num">Asm</th><th className="num">Parts</th>
+              <th className="num">Material</th><th className="num">Outsourced</th><th>Delivery</th><th>Status</th>
+            </tr></thead>
+            <tbody>
+              {rows.map(p => {
+                const parts = projectParts(p.code);
+                const wt = parts.reduce((s, x) => s + x.weightKg, 0);
+                const outVal = OUTSOURCE.filter(o => o.project === p.code).reduce((s, o) => s + o.value, 0);
+                const asm = projectAssemblies(p.code).filter(a => !a.parent).length;
+                const d = daysFromToday(p.due);
+                return (
+                  <tr key={p.code} onClick={() => go('/projects/' + p.code)}>
+                    <td><span className="code">{p.code}</span><div className="muted" style={{ fontSize:11 }}>{p.name}</div></td>
+                    <td className="dim">{p.customer}</td>
+                    <td style={{ minWidth:160 }}><div className="between" style={{ gap:8 }}><Bar value={p.progress} tone={p.progress > 80 ? 'ok' : 'info'}/><span className="mono" style={{ fontSize:11 }}>{p.progress}%</span></div></td>
+                    <td className="num">{asm || '—'}</td>
+                    <td className="num">{parts.length || '—'}</td>
+                    <td className="num">{wt ? fmtT(wt) : '—'}</td>
+                    <td className="num">{outVal ? fmtEGP(outVal) : '—'}</td>
+                    <td><span className="mono" style={{ fontSize:11.5 }}>{fmtDateShort(p.due)}</span> <span style={{ fontSize:10.5, color: d < 7 ? 'var(--crit)' : 'var(--ink-3)' }}>{d < 0 ? Math.abs(d) + 'd late' : d + 'd'}</span></td>
+                    <td><ProjStatus s={p.status}/></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ============================== page · project detail ============================== */
+function PhaseBars({ phases }){
+  return (
+    <div className="stack" style={{ gap:9 }}>
+      {Object.entries(phases).map(([k, v]) => (
+        <div key={k} style={{ display:'grid', gridTemplateColumns:'104px 1fr 40px', alignItems:'center', gap:12 }}>
+          <span className="dim" style={{ fontSize:12 }}>{k}</span>
+          <Bar value={v} tone={v === 100 ? 'ok' : v === 0 ? 'idle' : 'info'}/>
+          <span className="mono tnum" style={{ fontSize:11, textAlign:'right', color:'var(--ink-2)' }}>{v}%</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+const PROJ_TABS = ['overview','assemblies','bom','parts','production','outsourcing','qc'];
+function ProjectDetail({ code, tab }){
+  const toast = useToast();
+  const p = findProject(code);
+  if (!p) return <div className="page"><Empty icon="projects" title="Project not found" hint={'No project matches ' + code} action={<A href="/projects" className="btn">Back to projects</A>}/></div>;
+  tab = PROJ_TABS.includes(tab) ? tab : 'overview';
+  const parts = projectParts(code);
+  const asms = projectAssemblies(code).filter(a => !a.parent);
+  const subMap = {};
+  projectAssemblies(code).forEach(a => { if (a.parent) (subMap[a.parent] = subMap[a.parent] || []).push(a); });
+  const outs = OUTSOURCE.filter(o => o.project === code);
+  const qcs = QC.filter(q => parts.some(pp => pp.id === q.part));
+  const wt = parts.reduce((s, x) => s + x.weightKg, 0);
+  const d = daysFromToday(p.due);
+  return (
+    <div className="page">
+      <PageHead title={<span>{p.code} <span className="muted" style={{ fontWeight:400 }}>· {p.name}</span></span>}
+        sub={<span>Customer <b className="dim">{p.customer}</b> · Start {fmtDate(p.start)} · Delivery {fmtDate(p.due)} · <span style={{ color: d < 7 ? 'var(--crit)' : 'var(--ink-3)' }}>{d < 0 ? Math.abs(d) + ' days late' : d + ' days remaining'}</span></span>}>
+        <button className="btn ghost" onClick={() => toast({ title:'Report exported', desc:p.code + ' status pack (PDF)' })}><Icon n="download"/>Status pack</button>
+        <ProjStatus s={p.status}/>
+      </PageHead>
+
+      <div className="c8-4" style={{ marginBottom:16 }}>
+        <Panel title="Project Progress"><PhaseBars phases={p.phases}/></Panel>
+        <div className="stack">
+          <Panel title="At a glance">
+            <dl className="kv">
+              <dt>Assemblies</dt><dd className="mono">{asms.length || '—'}</dd>
+              <dt>Parts</dt><dd className="mono">{parts.length || '—'}</dd>
+              <dt>Material weight</dt><dd className="mono">{wt ? fmtT(wt) : '—'}</dd>
+              <dt>Outsourced value</dt><dd className="mono">{outs.length ? fmtEGP(outs.reduce((s, o) => s + o.value, 0)) : '—'}</dd>
+              <dt>Open NCRs</dt><dd className="mono">{ISSUES.filter(i => i.assembly && asms.concat(Object.values(subMap).flat()).some(a => a.code === i.assembly) && i.status !== 'Closed').length}</dd>
+            </dl>
+          </Panel>
+        </div>
+      </div>
+
+      <div className="tabs">
+        {PROJ_TABS.map(t => (
+          <A key={t} href={'/projects/' + code + (t === 'overview' ? '' : '/' + t)} className={cx(tab === t && 'on')}>
+            {t.charAt(0).toUpperCase() + t.slice(1)}
+          </A>
+        ))}
+      </div>
+
+      {tab === 'overview' ? (
+        <div className="two">
+          <Panel title="Assemblies" pad={false}>
+            {asms.length === 0
+              ? <Empty icon="bom" title="No assemblies imported" hint="Assembly breakdown for this project has not been released from engineering yet."/>
+              : <table className="tbl"><tbody>
+                  {asms.map(a => (
+                    <tr key={a.code} onClick={() => go('/projects/' + code + '/asm/' + a.code)}>
+                      <td><span className="code">{a.code}</span><div className="muted" style={{ fontSize:11 }}>{a.name}</div></td>
+                      <td style={{ width:130 }}><Bar value={a.completion} tone={a.completion > 80 ? 'ok' : 'info'}/></td>
+                      <td className="num">{assemblyParts(a.code).length}p</td>
+                      <td style={{ width:60 }}><Icon n="chevR" size={14} cls="muted"/></td>
+                    </tr>
+                  ))}
+                </tbody></table>}
+          </Panel>
+          <Panel title="Recent activity">
+            <div className="stack" style={{ gap:10 }}>
+              {[
+                { i:'check', t:'P-001247 passed FINAL_DIM_QC', s:'2 days ago · released to assembly', c:'ok' },
+                { i:'issues', t:'NCR-018 raised on P-001262', s:'2 days ago · hole pattern out of tolerance', c:'crit' },
+                { i:'outsourcing', t:'OUT-0263 dispatched from El Obour', s:'3 days ago · 60 parts powder coated', c:'info' },
+                { i:'materials', t:'6 mm S235JR reservation shortfall', s:'4 days ago · 1.7 t short for cutting', c:'warn' },
+                { i:'nesting', t:'NEST-0261 released to TruLaser 5030', s:'5 days ago · 86.4% utilisation', c:'info' },
+              ].map((x, i) => (
+                <div key={i} className="row" style={{ gap:10, alignItems:'flex-start' }}>
+                  <Icon n={x.i} size={14} style={{ color: toneColor(x.c), marginTop:2 }}/>
+                  <div><div style={{ fontSize:12.5 }}>{x.t}</div><div className="muted" style={{ fontSize:11 }}>{x.s}</div></div>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+
+      {tab === 'assemblies' ? (
+        asms.length === 0
+          ? <Panel><Empty icon="bom" title="No assemblies imported" hint="Release the assembly breakdown from engineering to populate work orders." action={<button className="btn" onClick={() => toast('Import dialog is a stub in the MVP')}><Icon n="upload"/>Import assemblies</button>}/></Panel>
+          : <div className="stack">
+              {asms.map(a => {
+                const ap = assemblyParts(a.code);
+                const subs = subMap[a.code] || [];
+                return (
+                  <Panel key={a.code} title={<span>{a.code} · {a.name}</span>}
+                    actions={<><span className="chip">WO required · {ap.length + subs.reduce((s, x) => s + assemblyParts(x.code).length, 0) > 0 ? 'active' : 'blocked'}</span><A href={'/projects/' + code + '/asm/' + a.code} className="btn ghost sm">Open<Icon n="arrowR"/></A></>} pad={false}>
+                    <div style={{ padding:'12px 14px', display:'flex', gap:20, flexWrap:'wrap', fontSize:12 }}>
+                      <span className="muted">Parts <b className="dim">{ap.length}</b></span>
+                      <span className="muted">Weight <b className="dim">{fmtT(ap.reduce((s, x) => s + x.weightKg, 0))}</b></span>
+                      <span className="muted">Completion <b className="dim">{a.completion}%</b></span>
+                      <span className="muted">Current op <b className="dim">{a.currentOp}</b></span>
+                    </div>
+                    {subs.length ? <div style={{ padding:'0 14px 12px' }}>
+                      {subs.map(su => (
+                        <A key={su.code} href={'/projects/' + code + '/asm/' + su.code} className="row" style={{ gap:8, padding:'6px 0', fontSize:12, color:'var(--ink-2)' }}>
+                          <Icon n="cornerR" size={13}/><span className="code">{su.code}</span> {su.name}
+                          <span className="muted">· {assemblyParts(su.code).length} parts</span>
+                        </A>
+                      ))}
+                    </div> : null}
+                  </Panel>
+                );
+              })}
+            </div>
+      ) : null}
+
+      {tab === 'bom' ? <BomTree only={code}/> : null}
+
+      {tab === 'parts' ? (
+        parts.length === 0 ? <Panel><Empty icon="parts" title="No parts released" hint="Parts appear here once the BOM is released from engineering."/></Panel>
+        : <Panel pad={false}><PartsTable rows={parts}/></Panel>
+      ) : null}
+
+      {tab === 'production' ? (
+        <Panel pad={false}>
+          {(() => {
+            const pj = JOBS.filter(j => parts.some(pp => pp.id === j.part));
+            if (!pj.length) return <Empty icon="production" title="No active production jobs" hint="Work orders will appear once parts are released to the shop floor."/>;
+            return <table className="tbl"><thead><tr><th>Job</th><th>Part</th><th>Operation</th><th>Machine</th><th>Operator</th><th className="num">Qty</th><th>Due</th><th>Progress</th></tr></thead>
+              <tbody>{pj.map(j => { const pt = findPart(j.part); return (
+                <tr key={j.id} onClick={() => go('/parts/' + j.part)}>
+                  <td className="code">{j.id}</td><td><span className="code">{j.part}</span> <span className="muted" style={{ fontSize:11 }}>{pt && pt.desc}</span></td>
+                  <td className="dim">{j.op}</td><td className="dim">{j.machine}</td><td className="dim">{j.operator}</td>
+                  <td className="num">{j.qty}</td><td className="mono" style={{ fontSize:11 }}>{fmtDateShort(j.due)}</td>
+                  <td style={{ width:120 }}><Bar value={j.progress} tone={j.col === 'BLOCKED' ? 'crit' : j.progress === 100 ? 'ok' : 'info'}/></td>
+                </tr>); })}</tbody></table>;
+          })()}
+        </Panel>
+      ) : null}
+
+      {tab === 'outsourcing' ? (
+        outs.length === 0 ? <Panel><Empty icon="outsourcing" title="No active outsourcing jobs" hint="This project is fully fabricated in-house."/></Panel>
+        : <Panel pad={false}><OutsourceTable rows={outs}/></Panel>
+      ) : null}
+
+      {tab === 'qc' ? (
+        qcs.length === 0 ? <Panel><Empty icon="qc" title="No inspections logged" hint="QC records appear as parts reach in-process and final gates."/></Panel>
+        : <Panel pad={false}><QcTable rows={qcs}/></Panel>
+      ) : null}
+    </div>
+  );
+}
+
+/* ============================== page · assembly ============================== */
+function AssemblyView({ project, code }){
+  const a = findAssembly(code);
+  const p = findProject(project);
+  if (!a) return <div className="page"><Empty icon="bom" title="Assembly not found" hint={code}/></div>;
+  const parts = assemblyParts(code);
+  const wt = parts.reduce((s, x) => s + x.weightKg, 0);
+  const outCount = parts.filter(x => x.status === 'OUTSOURCED').length;
+  const ready = parts.filter(x => x.status === 'READY').length;
+  return (
+    <div className="page">
+      <PageHead title={<span>{a.code} <span className="muted" style={{ fontWeight:400 }}>· {a.name}</span></span>}
+        sub={<span>{p ? p.code + ' · ' + p.name : project}{a.parent ? ' · sub-assembly of ' + a.parent : ''}</span>}>
+        <A href={'/projects/' + project + '/assemblies'} className="btn ghost"><Icon n="arrowL"/>All assemblies</A>
+      </PageHead>
+
+      <div className="kpi-row" style={{ gridTemplateColumns:'repeat(5,1fr)', marginBottom:16 }}>
+        <div className="kpi"><span className="k-label">Parts</span><span className="k-val">{parts.length}</span></div>
+        <div className="kpi"><span className="k-label">Material Weight</span><span className="k-val">{fmtT(wt)}</span></div>
+        <div className="kpi"><span className="k-label">Completion</span><span className="k-val">{a.completion}%</span></div>
+        <div className="kpi"><span className="k-label">Current Operation</span><span className="k-val" style={{ fontSize:16 }}>{a.currentOp}</span></div>
+        <div className="kpi"><span className="k-label">Outsourced</span><span className="k-val">{outCount}<span className="muted" style={{ fontSize:13 }}> / {parts.length}</span></span></div>
+      </div>
+
+      <Panel title="Parts" pad={false}
+        actions={<span className="chip"><Icon n="check" size={12}/> {ready} ready for assembly</span>}>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr><th>Part No</th><th>Description</th><th>Material</th><th className="num">Thk</th><th className="num">Qty</th><th>Operation route</th><th>Status</th></tr></thead>
+            <tbody>
+              {parts.map(pt => (
+                <tr key={pt.id} onClick={() => go('/parts/' + pt.id)}>
+                  <td><span className="code">{pt.id}</span></td>
+                  <td>{pt.desc}<div className="muted" style={{ fontSize:10.5 }}>Rev {pt.rev} · {pt.drawing}</div></td>
+                  <td className="dim">{pt.grade}</td>
+                  <td className="num">{pt.thk} mm</td>
+                  <td className="num">{pt.qty}</td>
+                  <td className="muted" style={{ fontSize:11 }}>{pt.ops.slice(4, -1).join(' → ') || pt.ops.slice(2, -1).join(' → ')}</td>
+                  <td><MfgStatus s={pt.status}/></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ============================== shared tables ============================== */
+function PartsTable({ rows }){
+  return (
+    <div className="tbl-wrap">
+      <table className="tbl">
+        <thead><tr><th>Part No</th><th>Description</th><th>Project</th><th>Assembly</th><th>Material</th><th className="num">Thk</th><th className="num">Qty</th><th>Operation</th><th>Status</th></tr></thead>
+        <tbody>
+          {rows.map(pt => (
+            <tr key={pt.id} onClick={() => go('/parts/' + pt.id)}>
+              <td><span className="code">{pt.id}</span></td>
+              <td>{pt.desc}</td>
+              <td className="mono dimc" style={{ fontSize:11 }}>{pt.project}</td>
+              <td className="mono dimc" style={{ fontSize:11 }}>{pt.assembly}</td>
+              <td className="dim">{pt.grade}</td>
+              <td className="num">{pt.thk} mm</td>
+              <td className="num">{pt.qty}</td>
+              <td className="muted" style={{ fontSize:11 }}>{pt.ops[pt.opIndex] || '—'}</td>
+              <td><MfgStatus s={pt.status}/></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+function OutsourceTable({ rows }){
+  return (
+    <div className="tbl-wrap">
+      <table className="tbl">
+        <thead><tr><th>RFQ</th><th>Supplier</th><th>Project</th><th>Process</th><th className="num">Parts</th><th className="num">Weight</th><th className="num">Value</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody>
+          {rows.map(o => {
+            const s = findSupplier(o.supplier);
+            const d = daysFromToday(o.due);
+            const st = OUT_STATUS[o.status];
+            return (
+              <tr key={o.id} onClick={() => go('/outsourcing/' + o.id)}>
+                <td><span className="code">{o.rfq}</span><div className="muted" style={{ fontSize:10.5 }}>{o.id}</div></td>
+                <td>{s.name}<div className="muted" style={{ fontSize:10.5 }}>{s.city}</div></td>
+                <td className="mono dimc" style={{ fontSize:11 }}>{o.project}</td>
+                <td className="dim">{o.process}</td>
+                <td className="num">{o.partsCount}</td>
+                <td className="num">{o.weightT} t</td>
+                <td className="num">{fmtEGP(o.value)}</td>
+                <td><span className="mono" style={{ fontSize:11 }}>{fmtDateShort(o.due)}</span> <span style={{ fontSize:10.5, color: d < 3 ? 'var(--crit)' : d < 7 ? 'var(--warn)' : 'var(--ink-3)' }}>{d < 0 ? Math.abs(d) + 'd' : d + 'd'}</span></td>
+                <td><Pill tone={st.tone}>{st.label}</Pill></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+function QcTable({ rows }){
+  return (
+    <div className="tbl-wrap">
+      <table className="tbl">
+        <thead><tr><th>Inspection</th><th>Part</th><th>Type</th><th>Result</th><th>Date</th><th>Inspector</th><th>Note</th></tr></thead>
+        <tbody>
+          {rows.map(q => {
+            const tone = q.result === 'PASSED' ? 'ok' : q.result === 'FAILED' ? 'crit' : 'warn';
+            return (
+              <tr key={q.id} onClick={() => go('/parts/' + q.part)}>
+                <td className="code">{q.id}</td>
+                <td><span className="code">{q.part}</span></td>
+                <td className="dim">{q.type}{q.type === 'FINAL_DIM_QC' ? <span title="Mandatory final gate"> *</span> : ''}</td>
+                <td><Pill tone={tone}>{q.result}</Pill></td>
+                <td className="mono" style={{ fontSize:11 }}>{fmtDateShort(q.date)}</td>
+                <td className="dim">{q.inspector}</td>
+                <td className="muted" style={{ fontSize:11, maxWidth:280 }}>{q.note}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ============================== page · parts (global) ============================== */
+function Parts(){
+  const [q, setQ] = useState('');
+  const [st, setSt] = useState('all');
+  const rows = PARTS.filter(p => {
+    if (st !== 'all' && p.status !== st) return false;
+    if (!q.trim()) return true;
+    const s = q.toLowerCase();
+    return (p.id + ' ' + p.desc + ' ' + p.grade + ' ' + p.project + ' ' + p.assembly).toLowerCase().includes(s);
+  });
+  return (
+    <div className="page">
+      <PageHead title="Parts" sub={PARTS.length + ' parts under management · one identity from BOM to assembly'}>
+        <button className="btn ghost"><Icon n="download"/>Export</button>
+      </PageHead>
+      <div className="filterbar">
+        <input className="inp" placeholder="Search part number, description, grade…" value={q} onChange={e => setQ(e.target.value)}/>
+        <div className="seg">
+          {[['all','All'],['IN_PRODUCTION','In Production'],['OUTSOURCED','Outsourced'],['READY','Ready'],['BLOCKED','Blocked'],['FAILED','QC Failed'],['NOT_STARTED','Not Started']].map(([k,l]) => (
+            <button key={k} className={cx(st === k && 'on')} onClick={() => setSt(k)}>{l}</button>
+          ))}
+        </div>
+        <span className="muted" style={{ fontSize:11.5 }}>{rows.length} shown</span>
+      </div>
+      <Panel pad={false}>{rows.length ? <PartsTable rows={rows}/> : <Empty icon="parts" title="No parts match" hint="Adjust the filters or search term."/>}</Panel>
+    </div>
+  );
+}
+
+/* ============================== page · part detail ============================== */
+function PartDetail({ id }){
+  const toast = useToast();
+  const p = findPart(id);
+  if (!p) return <div className="page"><Empty icon="parts" title="Part not found" hint={'No part matches ' + id} action={<A href="/parts" className="btn">All parts</A>}/></div>;
+  const mat = findMat(p.grade, p.thk);
+  const conns = connectionsFor(id);
+  const finalIdx = p.ops.indexOf('FINAL_DIM_QC');
+  const qcPassed = p.qcState === 'PASSED';
+  const blocked = p.status === 'BLOCKED' || p.status === 'FAILED';
+  return (
+    <div className="page">
+      <PageHead title={<span>{p.id} <span className="muted" style={{ fontWeight:400 }}>· {p.desc}</span></span>}
+        sub={<span><A href={'/projects/' + p.project} className="lnk">{p.project}</A> / <A href={'/projects/' + p.project + '/asm/' + p.assembly} className="lnk">{p.assembly}</A> · Rev {p.rev}</span>}>
+        <button className="btn ghost" onClick={() => toast('Drawing ' + p.drawing + ' opened')}><Icon n="file"/>{p.drawing}</button>
+        <MfgStatus s={p.status}/>
+      </PageHead>
+
+      {blocked ? (
+        <div className="risk" style={{ marginBottom:16, borderColor: hexA(toneColor('crit'), 0.4), background: hexA(toneColor('crit'), 0.06) }}>
+          <span className="rdot" style={{ background:'var(--crit)' }}/>
+          <span className="rmain">
+            <span className="rtitle">{p.status === 'FAILED' ? 'Failed final dimensional QC' : 'Part is blocked'}</span>
+            <span className="rmeta" style={{ display:'block' }}>{p.note}</span>
+          </span>
+        </div>
+      ) : null}
+
+      <div className="c8-4">
+        <div className="stack">
+          <Panel title="Manufacturing Timeline">
+            <div className="tl">
+              {p.ops.map((op, i) => {
+                const done = i < p.opIndex || (p.status === 'READY' && i <= p.opIndex) || (p.status === 'COMPLETE');
+                const cur = i === p.opIndex && !['READY','COMPLETE'].includes(p.status);
+                const fail = op === 'FINAL_DIM_QC' && p.qcState === 'FAILED';
+                const last = i === p.ops.length - 1;
+                return (
+                  <div className="tl-step" key={op}>
+                    <div className="tl-rail">
+                      <span className={cx('tl-node', fail ? 'fail' : done ? 'done' : cur ? 'cur' : '')}/>
+                      {!last ? <span className={cx('tl-line', done && 'done')}/> : null}
+                    </div>
+                    <div className="tl-body">
+                      <div className={cx('tl-name', !done && !cur && 'muted2')}>
+                        {op}
+                        {op === 'FINAL_DIM_QC' ? <span className="muted" style={{ fontSize:10.5 }}>  · mandatory gate</span> : null}
+                        {cur ? <span style={{ marginLeft:8 }}><Pill tone="info">Current operation</Pill></span> : null}
+                        {fail ? <span style={{ marginLeft:8 }}><Pill tone="crit">Failed</Pill></span> : null}
+                      </div>
+                      {cur && p.machine ? <div className="tl-when">on {p.machine}</div> : null}
+                      {op === 'Ready for Assembly' && !qcPassed ? <div className="tl-when" style={{ color:'var(--warn)' }}>gated — FINAL_DIM_QC must pass first</div> : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Panel>
+
+          <Panel title="Workflow Connections" actions={<span className="chip">{p.id} across {conns.length} modules</span>}>
+            <div className="two" style={{ gap:8 }}>
+              {conns.map((c, i) => (
+                <A key={i} href={c.href} className="risk" style={{ padding:'9px 11px' }}>
+                  <Icon n={c.icon} size={14} style={{ color:'var(--ink-3)', marginTop:2 }}/>
+                  <span className="rmain">
+                    <span style={{ fontSize:11.5, fontWeight:500 }}>{c.type}</span>
+                    <span className="rmeta" style={{ display:'block' }}><span className="mono">{c.label}</span> · {c.sub}</span>
+                  </span>
+                  <Icon n="chevR" size={13} cls="muted"/>
+                </A>
+              ))}
+            </div>
+          </Panel>
+        </div>
+
+        <div className="stack">
+          <Panel title="Specification">
+            <dl className="kv">
+              <dt>Project</dt><dd><A href={'/projects/' + p.project} className="lnk mono">{p.project}</A></dd>
+              <dt>Assembly</dt><dd><A href={'/projects/' + p.project + '/asm/' + p.assembly} className="lnk mono">{p.assembly}</A></dd>
+              <dt>Material</dt><dd><A href="/materials" className="lnk">{p.grade}</A></dd>
+              <dt>Thickness</dt><dd className="mono">{p.thk} mm</dd>
+              <dt>Quantity</dt><dd className="mono">{p.qty}</dd>
+              <dt>Unit weight</dt><dd className="mono">{p.unitKg} kg</dd>
+              <dt>Total weight</dt><dd className="mono">{p.weightKg} kg</dd>
+              <dt>Revision</dt><dd className="mono">{p.rev}</dd>
+              <dt>Drawing</dt><dd className="mono">{p.drawing}</dd>
+              <dt>CAD file</dt><dd className="mono">{p.cad}</dd>
+              <dt>Current status</dt><dd><MfgStatus s={p.status}/></dd>
+            </dl>
+          </Panel>
+
+          <Panel title="Final Gate">
+            <div className="stack" style={{ gap:10 }}>
+              <div className="between">
+                <span style={{ fontSize:12.5 }}>FINAL_DIM_QC</span>
+                <Pill tone={p.qcState === 'PASSED' ? 'ok' : p.qcState === 'FAILED' ? 'crit' : p.qcState === 'PENDING' ? 'warn' : 'idle'}>
+                  {p.qcState === 'NONE' ? 'Not reached' : p.qcState}
+                </Pill>
+              </div>
+              <div className="muted" style={{ fontSize:11.5, lineHeight:1.5 }}>
+                OSTA business rule — a part cannot become <b className="dim">Ready for Assembly</b> until final dimensional QC passes. {finalIdx >= 0 ? p.ops.length - 1 - finalIdx : 1} step(s) remain after the gate.
+              </div>
+              <div className="between" style={{ paddingTop:4, borderTop:'1px solid var(--line)' }}>
+                <span style={{ fontSize:12.5 }}>Ready for Assembly</span>
+                {qcPassed ? <Pill tone="ok">Released</Pill> : <span className="chip"><Icon n="lock" size={11}/> Locked</span>}
+              </div>
+            </div>
+          </Panel>
+
+          {mat ? (
+            <Panel title="Material Position">
+              <dl className="kv">
+                <dt>Grade</dt><dd className="mono">{mat.grade} · {mat.thk} mm</dd>
+                <dt>Available</dt><dd className="mono">{(mat.avail - mat.reserved).toFixed(1)} t</dd>
+                <dt>Required</dt><dd className="mono">{mat.required} t</dd>
+                <dt>Shortage</dt><dd className="mono" style={{ color: mat.shortage > 0 ? 'var(--crit)' : 'var(--ok)' }}>{mat.shortage > 0 ? mat.shortage + ' t' : 'none'}</dd>
+              </dl>
+            </Panel>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · outsourcing ============================== */
+function Outsourcing(){
+  const [f, setF] = useState('active');
+  const active = OUTSOURCE.filter(o => o.status !== 'RECEIVED');
+  const rows = f === 'active' ? active : f === 'risk' ? OUTSOURCE.filter(o => o.status === 'AT_RISK' || daysFromToday(o.due) < 3) : OUTSOURCE;
+  const totalVal = active.reduce((s, o) => s + o.value, 0);
+  const totalT = active.reduce((s, o) => s + o.weightT, 0);
+  return (
+    <div className="page">
+      <PageHead title="Outsourcing Control Center" sub="Subcontracted fabrication across every supplier, in one view">
+        <button className="btn ghost"><Icon n="upload"/>Upload documents</button>
+        <button className="btn primary"><Icon n="plus"/>New RFQ</button>
+      </PageHead>
+
+      <div className="kpi-row" style={{ gridTemplateColumns:'repeat(4,1fr)', marginBottom:14 }}>
+        <div className="kpi"><span className="k-label">Active Jobs</span><span className="k-val">{active.length}</span></div>
+        <div className="kpi"><span className="k-label">Outsourced Value</span><span className="k-val">{fmtEGP(totalVal)}</span></div>
+        <div className="kpi"><span className="k-label">Weight Outsourced</span><span className="k-val">{totalT.toFixed(1)} t</span></div>
+        <div className="kpi"><span className="k-label">At Risk</span><span className="k-val" style={{ color:'var(--crit)' }}>{OUTSOURCE.filter(o => o.status === 'AT_RISK').length}</span></div>
+      </div>
+
+      <div className="filterbar">
+        <div className="seg">
+          {[['active','Active'],['risk','At Risk'],['all','All jobs']].map(([k,l]) => (
+            <button key={k} className={cx(f === k && 'on')} onClick={() => setF(k)}>{l}</button>
+          ))}
+        </div>
+        <span className="muted" style={{ fontSize:11.5 }}>{rows.length} jobs</span>
+      </div>
+
+      <Panel title="Active Outsourcing" pad={false}>
+        {rows.length ? <OutsourceTable rows={rows}/> : <Empty icon="outsourcing" title="No active outsourcing jobs" hint="Every project is currently fabricated in-house. New RFQs will appear here."/>}
+      </Panel>
+    </div>
+  );
+}
+
+/* ============================== page · outsourcing detail ============================== */
+function OutsourcingDetail({ id }){
+  const toast = useToast();
+  const o = findOut(id);
+  if (!o) return <div className="page"><Empty icon="outsourcing" title="Job not found" hint={id} action={<A href="/outsourcing" className="btn">Back</A>}/></div>;
+  const s = findSupplier(o.supplier);
+  const st = OUT_STATUS[o.status];
+  const curStep = st.step;
+  const d = daysFromToday(o.due);
+  const parts = o.parts.map(findPart).filter(Boolean);
+  return (
+    <div className="page">
+      <PageHead title={<span>{o.id} <span className="muted" style={{ fontWeight:400 }}>· {o.process}</span></span>}
+        sub={<span><b className="dim">{s.name}</b> · <A href={'/projects/' + o.project} className="lnk">{o.project}</A> · RFQ {o.rfq}</span>}>
+        <button className="btn ghost" onClick={() => toast({ title:'RFQ sent', desc:o.rfq + ' → ' + s.name })}><Icon n="outsourcing"/>Send RFQ</button>
+        <button className="btn ghost" onClick={() => toast('Documents uploaded to ' + o.id)}><Icon n="upload"/>Upload documents</button>
+        <button className="btn primary" onClick={() => toast({ title:'Marked received', desc:o.id + ' booked into incoming QC' })}><Icon n="check"/>Mark received</button>
+      </PageHead>
+
+      {o.note ? (
+        <div className="risk" style={{ marginBottom:16, borderColor: hexA(toneColor(st.tone), 0.4), background: hexA(toneColor(st.tone), 0.06) }}>
+          <span className="rdot" style={{ background: toneColor(st.tone) }}/>
+          <span className="rmain"><span className="rtitle">{st.label}</span><span className="rmeta" style={{ display:'block' }}>{o.note}</span></span>
+        </div>
+      ) : null}
+
+      <Panel title="Job Progress" pad={true}>
+        <div className="row" style={{ gap:0, alignItems:'stretch', overflowX:'auto' }}>
+          {OUT_STEPS.map((step, i) => {
+            const done = curStep >= 0 && i < curStep;
+            const cur = i === curStep;
+            const c = done ? '#35C88F' : cur ? '#4C9AFF' : '#2F353F';
+            return (
+              <div key={step} style={{ flex:1, minWidth:120, display:'flex', flexDirection:'column', alignItems:'center', gap:8, position:'relative' }}>
+                {i > 0 ? <span style={{ position:'absolute', left:'-50%', top:6, width:'100%', height:2, background: done || cur ? '#35C88F' : '#2F353F' }}/> : null}
+                <span style={{ width:14, height:14, borderRadius:9, background: done ? c : 'var(--ground)', border:'2px solid ' + c, zIndex:1, boxShadow: cur ? '0 0 0 4px rgba(76,154,255,.16)' : 'none' }}/>
+                <span style={{ fontSize:10.5, textAlign:'center', color: done || cur ? 'var(--ink)' : 'var(--ink-3)' }}>
+                  {step.replace('_', ' ').replace(/\b\w/g, m => m.toUpperCase())}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+
+      <div className="c8-4" style={{ marginTop:12 }}>
+        <div className="stack">
+          <Panel title="Scope" pad={false}>
+            {parts.length ? (
+              <table className="tbl"><thead><tr><th>Part No</th><th>Description</th><th>Material</th><th className="num">Qty</th><th className="num">Weight</th></tr></thead>
+                <tbody>{parts.map(pt => (
+                  <tr key={pt.id} onClick={() => go('/parts/' + pt.id)}>
+                    <td className="code">{pt.id}</td><td>{pt.desc}</td><td className="dim">{pt.grade} {pt.thk} mm</td>
+                    <td className="num">{pt.qty}</td><td className="num">{pt.weightKg} kg</td>
+                  </tr>
+                ))}</tbody></table>
+            ) : (
+              <div style={{ padding:14 }}>
+                <div className="muted" style={{ fontSize:12, marginBottom:8 }}>{o.partsCount} parts on this order · itemised part list not yet linked in the MVP seed.</div>
+                <div className="chip">Bulk scope · {o.partsCount} parts · {o.weightT} t</div>
+              </div>
+            )}
+          </Panel>
+          <Panel title="Documents">
+            <div className="stack" style={{ gap:8 }}>
+              {['RFQ package · ' + o.rfq + '.pdf', 'Drawing set · ' + o.project + '_outsource.zip', 'Material certificates · pending'].map((f2, i) => (
+                <div key={i} className="between" style={{ fontSize:12 }}>
+                  <span className="row" style={{ gap:8 }}><Icon n="file" size={14} cls="muted"/>{f2}</span>
+                  <button className="btn ghost sm" onClick={() => toast('Downloading ' + f2.split(' · ')[0])}><Icon n="download"/></button>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+        <div className="stack">
+          <Panel title="Supplier">
+            <dl className="kv">
+              <dt>Company</dt><dd><A href="/suppliers" className="lnk">{s.name}</A></dd>
+              <dt>Location</dt><dd>{s.city}</dd>
+              <dt>Contact</dt><dd>{s.contact}</dd>
+              <dt>Phone</dt><dd className="mono">{s.phone}</dd>
+              <dt>On-time</dt><dd className="mono">{s.onTime}%</dd>
+              <dt>Rating</dt><dd className="mono">{s.rating} / 5</dd>
+            </dl>
+          </Panel>
+          <Panel title="Commercial">
+            <dl className="kv">
+              <dt>Process</dt><dd>{o.process}</dd>
+              <dt>Parts</dt><dd className="mono">{o.partsCount}</dd>
+              <dt>Weight</dt><dd className="mono">{o.weightT} t</dd>
+              <dt>Quoted cost</dt><dd className="mono">{fmtEGP(o.value)}</dd>
+              <dt>Actual cost</dt><dd className="mono">{o.actual ? fmtEGP(o.actual) : '—'}</dd>
+              <dt>Sent</dt><dd className="mono">{fmtDate(o.sent)}</dd>
+              <dt>Expected</dt><dd className="mono">{fmtDate(o.eta)}</dd>
+              <dt>Need date</dt><dd className="mono" style={{ color: d < 3 ? 'var(--crit)' : 'var(--ink)' }}>{fmtDate(o.due)} ({d < 0 ? Math.abs(d) + 'd late' : d + 'd'})</dd>
+              <dt>Delivery</dt><dd><Pill tone={st.tone}>{st.label}</Pill></dd>
+            </dl>
+          </Panel>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · production board ============================== */
+const COLS = [
+  { key:'READY', label:'Ready', tone:'ok' },
+  { key:'IN_PRODUCTION', label:'In Production', tone:'info' },
+  { key:'QC', label:'QC', tone:'warn' },
+  { key:'COMPLETE', label:'Complete', tone:'ok' },
+  { key:'BLOCKED', label:'Blocked', tone:'crit' },
+];
+function Production(){
+  const toast = useToast();
+  const [jobs, setJobs] = useState(JOBS);
+  const [drag, setDrag] = useState(null);
+  const [over, setOver] = useState(null);
+  const move = (jid, col) => {
+    setJobs(js => js.map(j => {
+      if (j.id !== jid) return j;
+      if (col === 'COMPLETE'){
+        const pt = findPart(j.part);
+        if (pt && pt.qcState !== 'PASSED' && j.op !== 'FINAL_DIM_QC' ? false : (pt && pt.qcState === 'FAILED')){
+          toast({ tone:'crit', title:'Blocked by QC rule', desc:'FINAL_DIM_QC must pass before ' + j.part + ' can complete' });
+          return j;
+        }
+        if (pt && pt.qcState === 'FAILED'){
+          toast({ tone:'crit', title:'Blocked by QC rule', desc:'FINAL_DIM_QC failed for ' + j.part });
+          return j;
+        }
+      }
+      toast({ title:'Job moved', desc:j.part + ' → ' + (COLS.find(c => c.key === col) || {}).label });
+      return { ...j, col };
+    }));
+  };
+  return (
+    <div className="page">
+      <PageHead title="Production Board" sub="Live shop-floor jobs · drag a card to move it between states">
+        <A href="/nesting" className="btn ghost"><Icon n="nesting"/>Nesting queue</A>
+        <button className="btn ghost"><Icon n="refresh"/>Sync MES</button>
+      </PageHead>
+      <div className="board">
+        {COLS.map(c => {
+          const list = jobs.filter(j => j.col === c.key);
+          return (
+            <div key={c.key} className={cx('klane', over === c.key && 'drop')}
+              onDragOver={e => { e.preventDefault(); setOver(c.key); }}
+              onDragLeave={() => setOver(o => o === c.key ? null : o)}
+              onDrop={e => { e.preventDefault(); setOver(null); if (drag) move(drag, c.key); setDrag(null); }}>
+              <div className="klane-h">
+                <span className="kt"><span className="dot" style={{ display:'inline-block', width:6, height:6, borderRadius:9, background: toneColor(c.tone), marginRight:6 }}/>{c.label}</span>
+                <span className="kn">{list.length}</span>
+              </div>
+              <div className="klane-b">
+                {list.length === 0 ? <div className="muted" style={{ fontSize:11, padding:'8px 2px' }}>{c.key === 'BLOCKED' ? 'Nothing blocked' : 'Empty'}</div> : null}
+                {list.map(j => {
+                  const pt = findPart(j.part);
+                  return (
+                    <div key={j.id} className={cx('jcard', drag === j.id && 'drag')} draggable
+                      onDragStart={() => setDrag(j.id)} onDragEnd={() => setDrag(null)}
+                      onClick={() => go('/parts/' + j.part)}>
+                      <div className="between">
+                        <span className="jc-code">{j.part}</span>
+                        <span className="mono muted" style={{ fontSize:10 }}>{j.id}</span>
+                      </div>
+                      <div className="jc-desc">{pt ? pt.desc : '—'}</div>
+                      <div className="jc-meta">
+                        <span><b>{j.op}</b></span>
+                        <span>{j.machine}</span>
+                        <span>Op: {j.operator}</span>
+                        <span>Qty {j.qty}</span>
+                        <span>Due {fmtDateShort(j.due)}</span>
+                      </div>
+                      {j.block ? <div style={{ fontSize:10.5, color:'var(--crit)' }}><Icon n="lock" size={10}/> {j.block}</div>
+                        : <Bar value={j.progress} tone={j.progress === 100 ? 'ok' : c.tone}/>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="muted" style={{ fontSize:11, marginTop:12 }}>
+        Rule enforced — a job cannot move to <b className="dim">Complete</b> while its part's FINAL_DIM_QC has failed.
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · BOM ============================== */
+function BomTree({ only }){
+  const toast = useToast();
+  const projects = only ? [findProject(only)].filter(Boolean) : PROJECTS.filter(p => projectAssemblies(p.code).length);
+  const [open, setOpen] = useState(() => {
+    const o = {}; projects.forEach(p => { o[p.code] = true; });
+    ASSEMBLIES.forEach(a => { if (!a.parent) o[a.code] = only ? true : false; });
+    return o;
+  });
+  const tog = k => setOpen(o => ({ ...o, [k]: !o[k] }));
+  const Row = ({ depth, children, k, hasKids, meta }) => (
+    <div className="between" style={{ padding:'7px 12px', borderBottom:'1px solid var(--line-soft)', cursor: hasKids ? 'pointer' : 'default' }}
+      onClick={hasKids ? () => tog(k) : undefined}>
+      <span className="row" style={{ gap:7, alignItems:'center', paddingLeft: depth * 20, minWidth:0 }}>
+        {hasKids ? <Icon n={open[k] ? 'chevD' : 'chevR'} size={13} cls="muted"/> : <span style={{ width:13, display:'inline-block' }}/>}
+        {children}
+      </span>
+      {meta}
+    </div>
+  );
+  return (
+    <Panel title={only ? 'Bill of Materials' : 'Bill of Materials · all projects'} pad={false}
+      actions={<button className="btn ghost sm" onClick={() => toast('BOM import is a stub in the MVP')}><Icon n="upload"/>Import BOM</button>}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr', fontSize:12.5 }}>
+        <div className="between" style={{ padding:'9px 12px', borderBottom:'1px solid var(--line)', color:'var(--ink-3)', fontSize:10, letterSpacing:'.09em', textTransform:'uppercase' }}>
+          <span>Item · Description</span><span>Qty · Material · Thk · Rev · Status</span>
+        </div>
+        {projects.map(p => (
+          <React.Fragment key={p.code}>
+            <Row depth={0} k={p.code} hasKids meta={<span className="muted mono" style={{ fontSize:10.5 }}>{projectParts(p.code).length} parts</span>}>
+              <span className="code" style={{ fontWeight:500 }}>{p.code}</span>
+              <span className="muted">{p.name}</span>
+            </Row>
+            {open[p.code] && projectAssemblies(p.code).filter(a => !a.parent).map(a => {
+              const subs = projectAssemblies(p.code).filter(x => x.parent === a.code);
+              return (
+                <React.Fragment key={a.code}>
+                  <Row depth={1} k={a.code} hasKids meta={<span className="muted mono" style={{ fontSize:10.5 }}>{a.completion}%</span>}>
+                    <Icon n="bom" size={13} cls="muted"/>
+                    <A href={'/projects/' + p.code + '/asm/' + a.code} className="code lnk" onClick={e => e.stopPropagation()}>{a.code}</A>
+                    <span className="muted">{a.name}</span>
+                  </Row>
+                  {open[a.code] && subs.map(su => (
+                    <React.Fragment key={su.code}>
+                      <Row depth={2} k={su.code} hasKids meta={<span className="muted mono" style={{ fontSize:10.5 }}>{su.completion}%</span>}>
+                        <Icon n="cornerR" size={12} cls="muted"/>
+                        <A href={'/projects/' + p.code + '/asm/' + su.code} className="code lnk" onClick={e => e.stopPropagation()}>{su.code}</A>
+                        <span className="muted">{su.name}</span>
+                      </Row>
+                      {open[su.code] && assemblyParts(su.code).map(pt => (
+                        <Row key={pt.id} depth={3} meta={
+                          <span className="row" style={{ gap:10, alignItems:'center' }}>
+                            <span className="mono muted" style={{ fontSize:10.5 }}>{pt.qty}× · {pt.grade} · {pt.thk}mm · R{pt.rev}</span>
+                            <MfgStatus s={pt.status}/>
+                          </span>}>
+                          <A href={'/parts/' + pt.id} className="code lnk" onClick={e => e.stopPropagation()}>{pt.id}</A>
+                          <span>{pt.desc}</span>
+                        </Row>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                  {open[a.code] && assemblyParts(a.code).map(pt => (
+                    <Row key={pt.id} depth={2} meta={
+                      <span className="row" style={{ gap:10, alignItems:'center' }}>
+                        <span className="mono muted" style={{ fontSize:10.5 }}>{pt.qty}× · {pt.grade} · {pt.thk}mm · R{pt.rev}</span>
+                        <MfgStatus s={pt.status}/>
+                      </span>}>
+                      <A href={'/parts/' + pt.id} className="code lnk" onClick={e => e.stopPropagation()}>{pt.id}</A>
+                      <span>{pt.desc}</span>
+                    </Row>
+                  ))}
+                </React.Fragment>
+              );
+            })}
+          </React.Fragment>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+function Bom(){
+  return (
+    <div className="page">
+      <PageHead title="BOM" sub="Project → Assembly → Sub-assembly → Part · manufacturing status rolls up the tree">
+        <button className="btn primary"><Icon n="upload"/>Import BOM</button>
+      </PageHead>
+      <BomTree/>
+    </div>
+  );
+}
+
+/* ============================== page · materials ============================== */
+function Materials(){
+  const alerts = MATERIALS.filter(m => m.shortage > 0);
+  const exposure = MATERIALS.reduce((s, m) => s + m.reserved * 1000 * m.price / 1000, 0);
+  return (
+    <div className="page">
+      <PageHead title="Materials" sub="Stock, reservations and shortage exposure by grade & thickness">
+        <button className="btn ghost"><Icon n="upload"/>Import stock</button>
+        <button className="btn"><Icon n="outsourcing"/>Raise purchase</button>
+      </PageHead>
+
+      <div className="kpi-row" style={{ gridTemplateColumns:'repeat(4,1fr)', marginBottom:14 }}>
+        <div className="kpi"><span className="k-label">Grades tracked</span><span className="k-val">{MATERIALS.length}</span></div>
+        <div className="kpi"><span className="k-label">Shortage lines</span><span className="k-val" style={{ color:'var(--crit)' }}>{alerts.length}</span></div>
+        <div className="kpi"><span className="k-label">Total shortage</span><span className="k-val">{alerts.reduce((s, m) => s + m.shortage, 0).toFixed(1)} t</span></div>
+        <div className="kpi"><span className="k-label">Reserved exposure</span><span className="k-val">{fmtEGP(exposure)}</span></div>
+      </div>
+
+      {alerts.length ? (
+        <div className="stack" style={{ gap:8, marginBottom:14 }}>
+          {alerts.map(m => (
+            <div key={m.key} className="risk" style={{ borderColor: hexA(toneColor('crit'), 0.35) }}>
+              <span className="rdot" style={{ background:'var(--crit)' }}/>
+              <span className="rmain">
+                <span className="rtitle">Material shortage · {m.grade} {m.thk} mm</span>
+                <span className="rmeta" style={{ display:'block' }}>Required {m.required} t · available {(m.avail - m.reserved).toFixed(1)} t · short <b style={{ color:'var(--crit)' }}>{m.shortage} t</b></span>
+              </span>
+              <span className="rtag">{fmtEGP(m.shortage * 1000 * m.price / 1000)}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <Panel title="Material Inventory" pad={false}>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr><th>Material</th><th>Family</th><th className="num">Thk</th><th className="num">Available</th><th className="num">Reserved</th><th className="num">Required</th><th className="num">Shortage</th><th>Coverage</th></tr></thead>
+            <tbody>
+              {MATERIALS.map(m => {
+                const free = m.avail - m.reserved;
+                const cover = Math.max(0, Math.min(100, free / m.required * 100));
+                return (
+                  <tr key={m.key} className="norow">
+                    <td className="code">{m.grade}</td>
+                    <td className="dim">{m.family}</td>
+                    <td className="num">{m.thk} mm</td>
+                    <td className="num">{m.avail.toFixed(1)} t</td>
+                    <td className="num">{m.reserved.toFixed(1)} t</td>
+                    <td className="num">{m.required.toFixed(1)} t</td>
+                    <td className="num" style={{ color: m.shortage > 0 ? 'var(--crit)' : 'var(--ink-3)' }}>{m.shortage > 0 ? m.shortage.toFixed(1) + ' t' : '—'}</td>
+                    <td style={{ width:120 }}><Bar value={cover} tone={cover >= 100 ? 'ok' : cover > 50 ? 'warn' : 'crit'}/></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ============================== page · nesting ============================== */
+const NEST_ST = { READY:'ok', RUNNING:'info', QUEUED:'idle', BELOW_TARGET:'warn' };
+function Nesting(){
+  return (
+    <div className="page">
+      <PageHead title="Nesting" sub="Sheet layouts feeding the cutting machines · utilisation vs 80% target">
+        <button className="btn"><Icon n="nesting"/>Auto-nest queue</button>
+      </PageHead>
+      <div className="three">
+        {NESTS.map(n => (
+          <A key={n.id} href={'/nesting/' + n.id} className="panel" style={{ display:'block' }}>
+            <div className="panel-h">
+              <h3>{n.id}</h3>
+              <Pill tone={NEST_ST[n.status]}>{n.status.replace('_', ' ')}</Pill>
+            </div>
+            <div className="panel-b">
+              <SheetView nest={n}/>
+              <div className="between" style={{ marginTop:10, fontSize:11.5 }}>
+                <span className="dim">{n.grade} · {n.thk} mm</span>
+                <span className="mono">{n.parts} parts</span>
+              </div>
+              <div className="between" style={{ marginTop:6 }}>
+                <div className="bar" style={{ flex:1, marginRight:10 }}><i style={{ width: n.util + '%', background: n.util >= NEST_TARGET ? 'var(--ok)' : 'var(--warn)' }}/></div>
+                <span className="mono" style={{ fontSize:11, color: n.util >= NEST_TARGET ? 'var(--ok)' : 'var(--warn)' }}>{n.util}%</span>
+              </div>
+              <div className="muted" style={{ fontSize:10.5, marginTop:6 }}>{n.machine} · scrap {(100 - n.util).toFixed(1)}%</div>
+            </div>
+          </A>
+        ))}
+      </div>
+    </div>
+  );
+}
+function NestingDetail({ id }){
+  const n = findNest(id);
+  if (!n) return <div className="page"><Empty icon="nesting" title="Nest not found" hint={id}/></div>;
+  const relatedParts = PARTS.filter(p => p.grade === n.grade && p.thk === n.thk && p.project === n.project);
+  return (
+    <div className="page">
+      <PageHead title={<span>{n.id} <span className="muted" style={{ fontWeight:400 }}>· {n.grade} {n.thk} mm</span></span>}
+        sub={<span><A href={'/projects/' + n.project} className="lnk">{n.project}</A> · {n.machine}</span>}>
+        <Pill tone={NEST_ST[n.status]}>{n.status.replace('_', ' ')}</Pill>
+      </PageHead>
+      <div className="c8-4">
+        <Panel title="Sheet Layout">
+          <div className="sheet-box"><SheetView nest={n} big/></div>
+          <div className="muted" style={{ fontSize:11, marginTop:8 }}>Illustrative layout — demonstrates part packing on a {n.sheetW} × {n.sheetL} mm sheet. Actual nesting is produced by the CAM system.</div>
+        </Panel>
+        <div className="stack">
+          <Panel title="Nest Data">
+            <dl className="kv">
+              <dt>Nest ID</dt><dd className="mono">{n.id}</dd>
+              <dt>Material</dt><dd className="mono">{n.grade}</dd>
+              <dt>Thickness</dt><dd className="mono">{n.thk} mm</dd>
+              <dt>Sheet size</dt><dd className="mono">{n.sheetW} × {n.sheetL}</dd>
+              <dt>Parts</dt><dd className="mono">{n.parts}</dd>
+              <dt>Utilisation</dt><dd className="mono" style={{ color: n.util >= NEST_TARGET ? 'var(--ok)' : 'var(--warn)' }}>{n.util}%</dd>
+              <dt>Scrap</dt><dd className="mono">{(100 - n.util).toFixed(1)}%</dd>
+              <dt>Machine</dt><dd>{n.machine}</dd>
+              <dt>Status</dt><dd><Pill tone={NEST_ST[n.status]}>{n.status.replace('_', ' ')}</Pill></dd>
+            </dl>
+          </Panel>
+          {n.util < NEST_TARGET ? (
+            <div className="risk" style={{ borderColor: hexA(toneColor('warn'), 0.35) }}>
+              <span className="rdot" style={{ background:'var(--warn)' }}/>
+              <span className="rmain"><span className="rtitle">Below utilisation target</span><span className="rmeta" style={{ display:'block' }}>{n.util}% vs {NEST_TARGET}% — consider combining with another order on the same grade.</span></span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      {relatedParts.length ? (
+        <Panel title="Parts on this material" pad={false} style={{ marginTop:12 }}>
+          <PartsTable rows={relatedParts}/>
+        </Panel>
+      ) : null}
+    </div>
+  );
+}
+
+/* ============================== page · QC ============================== */
+function QcPage(){
+  const [f, setF] = useState('all');
+  const rows = QC.filter(q => f === 'all' ? true : f === 'pending' ? q.result === 'PENDING' : f === 'failed' ? q.result === 'FAILED' : q.result === 'PASSED');
+  return (
+    <div className="page">
+      <PageHead title="Quality Control" sub="FINAL_DIM_QC is the mandatory gate before any part is released for assembly">
+        <button className="btn ghost"><Icon n="download"/>QC report</button>
+      </PageHead>
+      <div className="kpi-row" style={{ gridTemplateColumns:'repeat(5,1fr)', marginBottom:14 }}>
+        <div className="kpi"><span className="k-label">Pending Inspections</span><span className="k-val">{QC_KPI.pending}</span></div>
+        <div className="kpi"><span className="k-label">Passed · 30d</span><span className="k-val" style={{ color:'var(--ok)' }}>{QC_KPI.passed30}</span></div>
+        <div className="kpi"><span className="k-label">Failed · 30d</span><span className="k-val" style={{ color:'var(--crit)' }}>{QC_KPI.failed30}</span></div>
+        <div className="kpi"><span className="k-label">Open NCRs</span><span className="k-val" style={{ color:'var(--warn)' }}>{QC_KPI.ncrOpen}</span></div>
+        <div className="kpi"><span className="k-label">In Rework</span><span className="k-val">{QC_KPI.rework}</span></div>
+      </div>
+      <div className="filterbar">
+        <div className="seg">
+          {[['all','All'],['pending','Pending'],['passed','Passed'],['failed','Failed']].map(([k,l]) => (
+            <button key={k} className={cx(f === k && 'on')} onClick={() => setF(k)}>{l}</button>
+          ))}
+        </div>
+        <span className="muted" style={{ fontSize:11.5 }}>{rows.length} inspections · <span style={{ color:'var(--ink-2)' }}>*</span> mandatory final gate</span>
+      </div>
+      <Panel pad={false}><QcTable rows={rows}/></Panel>
+    </div>
+  );
+}
+
+/* ============================== page · NCR / issues ============================== */
+function Issues(){
+  const [f, setF] = useState('open');
+  const rows = ISSUES.filter(i => f === 'all' ? true : f === 'open' ? i.status !== 'Closed' : i.status === 'Closed');
+  const sevTone = s => s === 'Critical' ? 'crit' : s === 'Major' ? 'warn' : 'idle';
+  const hrefFor = i => i.refType === 'part' ? '/parts/' + i.ref : i.refType === 'supplier' ? '/suppliers' : i.refType === 'material' ? '/materials' : i.assembly ? '/projects/PRJ-26001/asm/' + i.ref : '/issues';
+  return (
+    <div className="page">
+      <PageHead title="NCR / Issues" sub="Non-conformance reports and operational blockers">
+        <button className="btn primary"><Icon n="plus"/>Raise NCR</button>
+      </PageHead>
+      <div className="filterbar">
+        <div className="seg">
+          {[['open','Open'],['closed','Closed'],['all','All']].map(([k,l]) => (
+            <button key={k} className={cx(f === k && 'on')} onClick={() => setF(k)}>{l}</button>
+          ))}
+        </div>
+        <span className="muted" style={{ fontSize:11.5 }}>{rows.length} shown</span>
+      </div>
+      <Panel pad={false}>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr><th>NCR</th><th>Against</th><th>Title</th><th>Severity</th><th>Status</th><th>Owner</th><th>Opened</th></tr></thead>
+            <tbody>
+              {rows.map(i => (
+                <tr key={i.id} onClick={() => go(hrefFor(i))}>
+                  <td className="code">{i.id}</td>
+                  <td className="mono dimc" style={{ fontSize:11 }}>{i.ref}</td>
+                  <td>{i.title}</td>
+                  <td><Pill tone={sevTone(i.severity)}>{i.severity}</Pill></td>
+                  <td><Pill tone={i.status === 'Closed' ? 'ok' : i.status === 'In Rework' ? 'info' : 'crit'}>{i.status}</Pill></td>
+                  <td className="dim">{i.owner}</td>
+                  <td className="mono" style={{ fontSize:11 }}>{fmtDateShort(i.opened)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ============================== page · CAD/CAM ============================== */
+function CadCam(){
+  const toast = useToast();
+  const [sel, setSel] = useState(PARTS[0].id);
+  const rows = PARTS.slice(0, 16);
+  const p = findPart(sel);
+  const camStatus = pt => {
+    if (['READY','COMPLETE','QC'].includes(pt.status) || pt.opIndex > 4) return { label:'Posted', tone:'ok' };
+    if (pt.opIndex >= 3) return { label:'Programmed', tone:'info' };
+    return { label:'Not programmed', tone:'idle' };
+  };
+  return (
+    <div className="page">
+      <PageHead title="CAD / CAM" sub="Model revisions, CAM programmes and machine posting status">
+        <button className="btn ghost" onClick={() => toast('CAD sync queued')}><Icon n="refresh"/>Sync PDM</button>
+      </PageHead>
+      <div className="c7-5">
+        <Panel title="Programmes" pad={false}>
+          <div className="tbl-wrap">
+            <table className="tbl">
+              <thead><tr><th>Part</th><th>CAD file</th><th>Rev</th><th>CAM</th><th>Machine</th></tr></thead>
+              <tbody>
+                {rows.map(pt => {
+                  const c = camStatus(pt);
+                  return (
+                    <tr key={pt.id} onClick={() => setSel(pt.id)} className={cx(sel === pt.id && 'on')} style={sel === pt.id ? { background:'var(--panel-3)' } : null}>
+                      <td className="code">{pt.id}</td>
+                      <td className="mono dimc" style={{ fontSize:11 }}>{pt.cad}</td>
+                      <td className="mono">{pt.rev}</td>
+                      <td><Pill tone={c.tone}>{c.label}</Pill></td>
+                      <td className="dim">{pt.machine || '—'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+        <div className="stack">
+          <Panel title={'Model · ' + p.id}>
+            <svg viewBox="0 0 220 150" width="100%" style={{ background:'var(--ground-2)', border:'1px solid var(--line)', borderRadius:6, maxHeight:180 }}>
+              <g stroke="#4C9AFF" strokeWidth="1.1" fill="none" strokeOpacity="0.85">
+                <path d="M40 95 L120 95 L160 70 L80 70 Z"/>
+                <path d="M40 95 L40 55 L80 30 L80 70"/>
+                <path d="M120 95 L120 55 L160 30 L160 70"/>
+                <path d="M40 55 L120 55 L160 30 M80 30 L160 30"/>
+                <path d="M55 88 L55 62 M100 88 L100 62" strokeOpacity="0.4"/>
+              </g>
+              <text x="12" y="140" fontSize="8" fill="#6D7681" fontFamily="var(--mono)">isometric preview · {p.cad}</text>
+            </svg>
+          </Panel>
+          <Panel title="Revision History">
+            <div className="tl">
+              {['A','B','C'].filter(r => r <= p.rev).reverse().map((r, i) => (
+                <div className="tl-step" key={r}>
+                  <div className="tl-rail"><span className={cx('tl-node', i === 0 && 'cur', i !== 0 && 'done')}/>{i < 2 ? <span className="tl-line done"/> : null}</div>
+                  <div className="tl-body">
+                    <div className="tl-name">Rev {r} {i === 0 ? <Pill tone="info">current</Pill> : null}</div>
+                    <div className="tl-when">{r === 'A' ? 'Initial release' : r === 'B' ? 'Tolerance update on mating faces' : 'Weld prep revised'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · inventory ============================== */
+const STOCK = [
+  { mat:'S235JR 6 mm', lot:'H2291', loc:'Rack A1', qty:2100, state:'Quarantine' },
+  { mat:'S235JR 6 mm', lot:'H2264', loc:'Rack A1', qty:2100, state:'Available' },
+  { mat:'S235JR 8 mm', lot:'H2270', loc:'Rack A2', qty:1400, state:'Available' },
+  { mat:'S235JR 8 mm', lot:'H2270', loc:'Rack A2', qty:1400, state:'Reserved' },
+  { mat:'S355JR 10 mm', lot:'H3105', loc:'Rack B1', qty:2400, state:'Available' },
+  { mat:'S355JR 10 mm', lot:'H3105', loc:'Rack B1', qty:2600, state:'Reserved' },
+  { mat:'S355JR 15 mm', lot:'H3140', loc:'Rack B3', qty:1000, state:'Available' },
+  { mat:'SS304 3 mm', lot:'X8801', loc:'Rack C1', qty:700, state:'Available' },
+  { mat:'SS316 3 mm', lot:'X9203', loc:'Rack C2', qty:400, state:'Available' },
+];
+const MOVES = [
+  { t:'2026-09-06', k:'Issued', mat:'S355JR 10 mm', qty:-620, ref:'PJ-4103 · Cross Member' },
+  { t:'2026-09-05', k:'Received', mat:'SS304 3 mm', qty:700, ref:'PO-1188 · Ezz Steel' },
+  { t:'2026-09-05', k:'Reserved', mat:'S355JR 10 mm', qty:-2600, ref:'PRJ-26004' },
+  { t:'2026-09-04', k:'Quarantine', mat:'S235JR 6 mm', qty:-2100, ref:'NCR-014 · missing cert' },
+  { t:'2026-09-03', k:'Issued', mat:'S235JR 8 mm', qty:-410, ref:'PJ-4102 · Base Plate' },
+];
+function Inventory(){
+  const stateTone = s => s === 'Available' ? 'ok' : s === 'Reserved' ? 'info' : s === 'Quarantine' ? 'crit' : 'idle';
+  return (
+    <div className="page">
+      <PageHead title="Inventory" sub="Physical stock by rack, heat lot and allocation state">
+        <button className="btn ghost"><Icon n="upload"/>Stock count</button>
+      </PageHead>
+      <div className="c7-5">
+        <Panel title="Stock on Hand" pad={false}>
+          <div className="tbl-wrap">
+            <table className="tbl">
+              <thead><tr><th>Material</th><th>Heat / Lot</th><th>Location</th><th className="num">Qty</th><th>State</th></tr></thead>
+              <tbody>
+                {STOCK.map((s, i) => (
+                  <tr key={i} className="norow">
+                    <td className="code">{s.mat}</td>
+                    <td className="mono dimc" style={{ fontSize:11 }}>{s.lot}</td>
+                    <td className="dim">{s.loc}</td>
+                    <td className="num">{fmtInt(s.qty)} kg</td>
+                    <td><Pill tone={stateTone(s.state)}>{s.state}</Pill></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+        <Panel title="Recent Movements">
+          <div className="stack" style={{ gap:9 }}>
+            {MOVES.map((m, i) => (
+              <div key={i} className="between" style={{ fontSize:12 }}>
+                <span className="row" style={{ gap:8 }}>
+                  <Icon n={m.qty > 0 ? 'download' : 'upload'} size={13} style={{ color: m.qty > 0 ? 'var(--ok)' : 'var(--warn)' }}/>
+                  <span><b className="dim">{m.k}</b> · {m.mat}<div className="muted" style={{ fontSize:10.5 }}>{m.ref}</div></span>
+                </span>
+                <span className="mono tnum" style={{ color: m.qty > 0 ? 'var(--ok)' : 'var(--ink-2)' }}>{m.qty > 0 ? '+' : ''}{fmtInt(m.qty)}</span>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · suppliers ============================== */
+function Suppliers(){
+  return (
+    <div className="page">
+      <PageHead title="Suppliers" sub="Subcontractor network · capability, capacity and delivery performance">
+        <button className="btn primary"><Icon n="plus"/>Add supplier</button>
+      </PageHead>
+      <div className="three">
+        {SUPPLIERS.map(s => {
+          const jobs = OUTSOURCE.filter(o => o.supplier === s.id && o.status !== 'RECEIVED').length;
+          return (
+            <div key={s.id} className="panel">
+              <div className="panel-b">
+                <div className="between">
+                  <div>
+                    <div style={{ fontWeight:600, fontSize:13 }}>{s.name}</div>
+                    <div className="muted" style={{ fontSize:11 }}>{s.city}</div>
+                  </div>
+                  <span className="mono" style={{ fontSize:12, color: s.rating >= 4.5 ? 'var(--ok)' : s.rating >= 4 ? 'var(--ink)' : 'var(--warn)' }}>★ {s.rating}</span>
+                </div>
+                <div className="row wrap" style={{ gap:5, margin:'10px 0' }}>
+                  {s.processes.map(pr => <span key={pr} className="chip" style={{ fontSize:10.5 }}>{pr}</span>)}
+                </div>
+                <dl className="kv" style={{ gridTemplateColumns:'90px 1fr', fontSize:12 }}>
+                  <dt>On-time</dt><dd className="mono" style={{ color: s.onTime >= 90 ? 'var(--ok)' : s.onTime >= 80 ? 'var(--ink)' : 'var(--warn)' }}>{s.onTime}%</dd>
+                  <dt>Active jobs</dt><dd className="mono">{jobs}</dd>
+                  <dt>Contact</dt><dd>{s.contact}</dd>
+                </dl>
+                <div style={{ marginTop:8 }}>
+                  <div className="between" style={{ fontSize:10.5, color:'var(--ink-3)', marginBottom:3 }}><span>Load</span><span>{s.capacity}%</span></div>
+                  <Bar value={s.capacity} tone={s.capacity > 80 ? 'warn' : 'info'}/>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · analytics ============================== */
+function Analytics(){
+  return (
+    <div className="page">
+      <PageHead title="Analytics" sub="Throughput, delivery performance and outsourcing spend"/>
+      <div className="two" style={{ marginBottom:12 }}>
+        <Panel title="On-Time Delivery · 12 weeks">
+          <AreaTrend data={ONTIME_TREND} target={90} height={170}/>
+        </Panel>
+        <Panel title="WIP by Stage">
+          <BarsH rows={FLOW.map(s => ({ k:s.key, v:s.count, tone:s.status === 'crit' ? 'crit' : s.status === 'warn' ? 'warn' : 'info' }))}/>
+          <div className="muted" style={{ fontSize:11, marginTop:10 }}>Cutting carries the largest queue and 18 delayed items — the current bottleneck.</div>
+        </Panel>
+      </div>
+      <div className="two">
+        <Panel title="Outsourcing Spend by Process">
+          <BarsH rows={OUT_SPEND} fmt={fmtEGP}/>
+        </Panel>
+        <Panel title="Material Exposure by Grade">
+          <BarsH rows={EXPOSURE_BY_GRADE} fmt={fmtEGP}/>
+          <div className="muted" style={{ fontSize:11, marginTop:10 }}>Open reservation value ≈ EGP 1.84M across four grades.</div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== page · settings ============================== */
+const RULES = [
+  ['Work Order belongs to an Assembly', 'Every WO is created against exactly one assembly context (Project + Assembly code).'],
+  ['WO requires at least one Part', 'A Work Order cannot be opened for an assembly that contains no released parts.'],
+  ['Part number is consistent everywhere', 'The same Part No is used across BOM, Nesting, Production, Outsourcing and QC.'],
+  ['Final dimensional QC is mandatory', 'FINAL_DIM_QC is a required gate on every part route.'],
+  ['No "Ready for Assembly" before FINAL_DIM_QC', 'A part cannot be released to assembly until final QC passes.'],
+  ['Material shortages surface as risks', 'Any negative net availability automatically raises an operational risk.'],
+  ['Outsourced jobs carry a delivery state', 'Every subcontract order has an explicit Released → Received state.'],
+];
+function Settings(){
+  const toast = useToast();
+  return (
+    <div className="page">
+      <PageHead title="Settings" sub="Workspace configuration and OSTA manufacturing rules"/>
+      <div className="c7-5">
+        <div className="stack">
+          <Panel title="Organisation">
+            <dl className="kv">
+              <dt>Workspace</dt><dd>OSTA — Fabrication OS</dd>
+              <dt>Company</dt><dd>Demo Fabrication Co.</dd>
+              <dt>Location</dt><dd>Cairo, Egypt</dd>
+              <dt>Units</dt><dd>Metric · tonnes · mm</dd>
+              <dt>Currency</dt><dd>EGP (Egyptian Pound)</dd>
+              <dt>Fiscal year</dt><dd>January – December</dd>
+            </dl>
+          </Panel>
+          <Panel title="Integrations">
+            <div className="stack" style={{ gap:8 }}>
+              {['ERP · finance & purchasing', 'PDM · CAD vault', 'MES · shop-floor terminals', 'MRP · material planning'].map(x => (
+                <div key={x} className="between" style={{ fontSize:12 }}>
+                  <span className="row" style={{ gap:8 }}><Icon n="ext" size={13} cls="muted"/>{x}</span>
+                  <button className="btn ghost sm" onClick={() => toast('Connector coming soon')}>Connect</button>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+        <Panel title="Manufacturing Rules">
+          <div className="stack" style={{ gap:10 }}>
+            {RULES.map(([t, d], i) => (
+              <div key={i} className="row" style={{ gap:10, alignItems:'flex-start' }}>
+                <span className="chip" style={{ background: hexA(toneColor('ok'), 0.12), borderColor: hexA(toneColor('ok'), 0.3), color:'var(--ok)' }}>
+                  <Icon n="lock" size={11}/> Rule {i + 1}
+                </span>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:12.5, fontWeight:500 }}>{t}</div>
+                  <div className="muted" style={{ fontSize:11 }}>{d}</div>
+                </div>
+                <Pill tone="ok">Enforced</Pill>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== app shell + router ============================== */
+function App(){
+  const { path, segs } = useRoute();
+  const [cmd, setCmd] = useState(false);
+  const [nav, setNav] = useState(false);
+  useEffect(() => {
+    const on = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); setCmd(c => !c); }
+    };
+    window.addEventListener('keydown', on);
+    return () => window.removeEventListener('keydown', on);
+  }, []);
+  useEffect(() => { setNav(false); }, [path]);
+
+  let page;
+  const [a, b, c, d] = segs;
+  if (segs.length === 0) page = <Dashboard/>;
+  else if (a === 'projects' && !b) page = <Projects/>;
+  else if (a === 'projects' && b && c === 'asm' && d) page = <AssemblyView project={b} code={d}/>;
+  else if (a === 'projects' && b) page = <ProjectDetail code={b} tab={c}/>;
+  else if (a === 'production') page = <Production/>;
+  else if (a === 'outsourcing' && b) page = <OutsourcingDetail id={b}/>;
+  else if (a === 'outsourcing') page = <Outsourcing/>;
+  else if (a === 'bom') page = <Bom/>;
+  else if (a === 'parts' && b) page = <PartDetail id={b}/>;
+  else if (a === 'parts') page = <Parts/>;
+  else if (a === 'cadcam') page = <CadCam/>;
+  else if (a === 'nesting' && b) page = <NestingDetail id={b}/>;
+  else if (a === 'nesting') page = <Nesting/>;
+  else if (a === 'materials') page = <Materials/>;
+  else if (a === 'inventory') page = <Inventory/>;
+  else if (a === 'suppliers') page = <Suppliers/>;
+  else if (a === 'qc') page = <QcPage/>;
+  else if (a === 'issues') page = <Issues/>;
+  else if (a === 'analytics') page = <Analytics/>;
+  else if (a === 'settings') page = <Settings/>;
+  else page = <div className="page"><Empty icon="search" title="Page not found" hint={'Nothing at /' + segs.join('/')} action={<A href="/" className="btn">Command Center</A>}/></div>;
+
+  return (
+    <ToastHost>
+      <div className={cx('app', nav && 'nav-open')}>
+        <Sidebar path={path} onNavigate={() => setNav(false)}/>
+        <div className="main">
+          <Topbar crumbs={resolveCrumbs(segs)} onSearch={() => setCmd(true)} onMenu={() => setNav(v => !v)}/>
+          {page}
+        </div>
+      </div>
+      <CommandPalette open={cmd} onClose={() => setCmd(false)}/>
+    </ToastHost>
+  );
+}
+
+const rootEl = document.getElementById('root');
+ReactDOM.createRoot(rootEl).render(<App/>);
+</script>
