@@ -1,0 +1,12 @@
+# Normalize line endings for text files across platforms.
+* text=auto eol=lf
+
+# Never let line-ending normalization touch binary files.
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
