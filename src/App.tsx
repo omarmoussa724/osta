@@ -22,6 +22,7 @@ import { Inventory } from './pages/Inventory';
 import { Suppliers } from './pages/Suppliers';
 import { Analytics } from './pages/Analytics';
 import { Settings } from './pages/Settings';
+import { Marketing } from './marketing/Marketing';
 
 function NotFound() {
   return (
@@ -40,6 +41,8 @@ export default function App() {
   return (
     <ToastProvider>
       <Routes>
+        {/* Standalone commercial site — no app chrome (sidebar/topbar). */}
+        <Route path="marketing" element={<Marketing />} />
         <Route element={<AppLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="projects" element={<Projects />} />
