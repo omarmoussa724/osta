@@ -1,0 +1,1487 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page {
+  size: a4 portrait;
+  margin: 20mm 17mm 20mm 17mm;
+  @frame footer { -pdf-frame-content: footerContent; bottom: 10mm; margin-left: 17mm;
+                  margin-right: 17mm; height: 8mm; }
+}
+body { font-family: Helvetica; font-size: 9.6pt; line-height: 1.42; color: #1a1d21; }
+#footerContent { font-size: 7.5pt; color: #8b929c; text-align: right; }
+h1 { font-size: 15pt; color: #0b0d10; border-bottom: 1.5pt solid #c9ced4;
+     padding-bottom: 2mm; margin: 0 0 3mm; -pdf-keep-with-next: true;
+     page-break-before: always; }
+h1.first { page-break-before: avoid; }
+h2 { font-size: 11pt; color: #14181d; margin: 6mm 0 2mm; -pdf-keep-with-next: true; }
+h3 { font-size: 9.8pt; color: #2b3038; margin: 4mm 0 1.5mm; -pdf-keep-with-next: true; }
+p { margin: 0 0 2.4mm; }
+ul, ol { margin: 1mm 0 3mm; padding-left: 6mm; }
+li { margin: 0.6mm 0; }
+code { font-family: Courier; font-size: 8.4pt; background: #f1f3f5; }
+pre { background: #f6f8fa; border: 1pt solid #e1e4e8; padding: 3mm; font-family: Courier;
+      font-size: 7.6pt; line-height: 1.35; -pdf-keep-in-frame-mode: shrink;
+      page-break-inside: avoid; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 8pt; }
+th, td { border: 0.6pt solid #cfd4da; padding: 1.4mm 2mm; text-align: left; }
+th { background: #eceff3; font-weight: bold; }
+strong { color: #0b0d10; }
+a { color: #2563eb; text-decoration: none; }
+hr { border: 0; border-top: 0.6pt solid #cfd4da; }
+.cover { page-break-after: always; border-left: 3pt solid #2563eb; padding-left: 10mm; }
+.cover .kick { font-size: 9pt; letter-spacing: 3pt; color: #2563eb; font-weight: bold; }
+.cover h1 { font-size: 26pt; border: 0; page-break-before: avoid; margin: 14mm 0 5mm; }
+.cover .sub { font-size: 12pt; color: #52606d; margin-bottom: 12mm; }
+.cover table { width: 90mm; font-size: 9pt; }
+.cover td { border: 0; padding: 1mm 0; }
+.cover td.k { color: #8b929c; width: 30mm; }
+.toc { page-break-after: always; }
+.toc-h { font-size: 15pt; color: #0b0d10; border-bottom: 1.5pt solid #c9ced4;
+         padding-bottom: 2mm; margin-bottom: 4mm; }
+.toc .t1 { font-size: 9.6pt; font-weight: bold; margin: 2.4mm 0 0.6mm; }
+.toc .t2 { font-size: 8.8pt; color: #52606d; margin: 0.4mm 0 0.4mm 6mm; }
+</style></head>
+<body>
+<div id="footerContent">OSTA - Software Requirements Specification &nbsp;|&nbsp; v1.0 &nbsp;|&nbsp; page <pdf:pagenumber> of <pdf:pagecount></div>
+
+<div class="cover">
+  <div class="kick">SOFTWARE REQUIREMENTS SPECIFICATION</div>
+  <h1>OSTA</h1>
+  <div class="sub">Software Requirements Specification (MVP)<br/>Manufacturing Outsourcing &amp; Fabrication Operating System</div>
+  <table>
+    <tr><td class="k">Document</td><td>OSTA SRS</td></tr>
+    <tr><td class="k">Version</td><td>1.0</td></tr>
+    <tr><td class="k">Status</td><td>MVP / front-end prototype</td></tr>
+    <tr><td class="k">Date</td><td>2026-09-08</td></tr>
+    <tr><td class="k">Audience</td><td>Developers</td></tr>
+    <tr><td class="k">Repository</td><td>https://github.com/omarmoussa724/osta</td></tr>
+  </table>
+</div>
+
+<div class="toc"><div class="toc-h">Contents</div>
+<div class="t1">1. Introduction</div>
+<div class="t2">1.1 Purpose</div>
+<div class="t2">1.2 Product scope &amp; vision</div>
+<div class="t2">1.3 Intended audience</div>
+<div class="t2">1.4 Definitions, acronyms, glossary</div>
+<div class="t2">1.5 References</div>
+<div class="t1">2. Overall description</div>
+<div class="t2">2.1 Product perspective</div>
+<div class="t2">2.2 Product functions (summary)</div>
+<div class="t2">2.3 User classes &amp; characteristics</div>
+<div class="t2">2.4 Operating environment</div>
+<div class="t2">2.5 Design &amp; implementation constraints</div>
+<div class="t2">2.6 Assumptions &amp; dependencies</div>
+<div class="t1">3. System architecture</div>
+<div class="t2">3.1 Technology stack (as built)</div>
+<div class="t2">3.2 Repository layout</div>
+<div class="t2">3.3 Runtime architecture</div>
+<div class="t2">3.4 Data layer &amp; the backend seam  (most important section for a backend dev)</div>
+<div class="t2">3.5 Routing map (from src/App.tsx, hash-prefixed at runtime)</div>
+<div class="t2">3.6 Design system</div>
+<div class="t2">3.7 Build &amp; run</div>
+<div class="t1">4. Data model</div>
+<div class="t2">4.1 Entity overview</div>
+<div class="t2">4.2 Entity dictionaries</div>
+<div class="t2">4.3 Identity &amp; referential rules</div>
+<div class="t2">4.4 Derived data</div>
+<div class="t1">5. Functional requirements</div>
+<div class="t2">5.1 Application shell &amp; navigation</div>
+<div class="t2">5.2 Command Center (/)</div>
+<div class="t2">5.3 Projects (/projects)</div>
+<div class="t2">5.4 Project detail (/projects/:code[/:tab])</div>
+<div class="t2">5.5 Assembly view (/projects/:code/asm/:asm)</div>
+<div class="t2">5.6 Part detail (/parts/:id)</div>
+<div class="t2">5.7 Parts (/parts)</div>
+<div class="t2">5.8 Outsourcing Control Center (/outsourcing, /outsourcing/:id)</div>
+<div class="t2">5.9 Production board (/production)</div>
+<div class="t2">5.10 BOM (/bom, and Project &gt; BOM tab)</div>
+<div class="t2">5.11 Materials (/materials)</div>
+<div class="t2">5.12 Nesting (/nesting, /nesting/:id)</div>
+<div class="t2">5.13 QC (/qc)</div>
+<div class="t2">5.14 NCR / Issues (/issues)</div>
+<div class="t2">5.15 CAD/CAM (/cadcam)</div>
+<div class="t2">5.16 Inventory (/inventory)</div>
+<div class="t2">5.17 Suppliers (/suppliers)</div>
+<div class="t2">5.18 Analytics (/analytics)</div>
+<div class="t2">5.19 Settings (/settings)</div>
+<div class="t2">5.20 Global search / command palette</div>
+<div class="t2">5.21 Cross-cutting UI states</div>
+<div class="t1">6. Business rules</div>
+<div class="t1">7. External interface requirements</div>
+<div class="t2">7.1 User interfaces</div>
+<div class="t2">7.2 Software interfaces (to be built)</div>
+<div class="t2">7.3 Integrations (future, all optional / additive)</div>
+<div class="t1">8. Non-functional requirements</div>
+<div class="t1">9. Roadmap to production (summary)</div>
+<div class="t1">Appendix A  -  Route reference</div>
+<div class="t1">Appendix B  -  Golden demo path (for smoke testing)</div>
+<div class="t1">Appendix C  -  Fabrication glossary</div>
+<div class="t1">Appendix D  -  Known MVP limitations</div>
+</div>
+<h1 class="first" id="1-introduction">1. Introduction</h1>
+<h2 id="11-purpose">1.1 Purpose</h2>
+<p>This document specifies the requirements and the as-built design of <strong>OSTA</strong>, a
+manufacturing operations application for sheet-metal fabrication and outsourced
+manufacturing. It is written for a <strong>developer</strong> who needs to understand what the
+system does, how the current codebase is structured, and what must be built to take
+it from MVP to a production SaaS.</p>
+<p>The MVP delivered in this repository is a <strong>front-end application with in-memory mock
+data</strong>. There is no backend, authentication, or persistence yet. Section 3.4 and
+Section 9 describe the seam and the path to a real backend.</p>
+<h2 id="12-product-scope-vision">1.2 Product scope &amp; vision</h2>
+<p>OSTA is positioned as <em>"the operating system for modern fabrication"</em>  -  a single
+operational layer over the workflow:</p>
+<pre><code>Customer -&gt; Engineering -&gt; BOM -&gt; Materials -&gt; CAD/CAM -&gt; Nesting -&gt;
+Outsourcing -&gt; Production -&gt; QC -&gt; Assembly -&gt; Delivery
+</code></pre>
+<p>The organising principle is a stable <strong>object hierarchy</strong> in which a part keeps one
+identity for its whole life:</p>
+<pre><code>Project -&gt; Assembly -&gt; Part -&gt; Operation -&gt; Material -&gt; Supplier/Factory -&gt; QC
+</code></pre>
+<p><strong>In scope for the MVP:</strong> a navigable, realistic demonstration of the control
+workflow  -  projects, assemblies, parts, BOM, materials, nesting, production,
+outsourcing and QC  -  with the OSTA business rules visible in the UI, and a global
+search that resolves one part number across every module.</p>
+<p><strong>Out of scope for the MVP:</strong> backend, database, auth, multi-tenancy, real file
+storage, real integrations (PDM/MES/nesting software), reporting exports, mobile
+apps, billing. These are the production roadmap (Section 9).</p>
+<h2 id="13-intended-audience">1.3 Intended audience</h2>
+<p>Primary: engineers implementing the backend and hardening the front end.
+Secondary: technical founders, prospective contributors, and reviewers.</p>
+<h2 id="14-definitions-acronyms-glossary">1.4 Definitions, acronyms, glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OSTA</strong></td>
+<td>Operations System Assistant  -  the product name</td>
+</tr>
+<tr>
+<td><strong>Project</strong></td>
+<td>A customer order / job, e.g. <code>PRJ-26001</code></td>
+</tr>
+<tr>
+<td><strong>Assembly</strong></td>
+<td>A buildable sub-unit of a project, e.g. <code>ASM-001</code>; may have sub-assemblies (<code>ASM-001.1</code>)</td>
+</tr>
+<tr>
+<td><strong>Part</strong></td>
+<td>A single manufactured item with a globally unique <strong>Part Number</strong>, e.g. <code>P-001245</code></td>
+</tr>
+<tr>
+<td><strong>BOM</strong></td>
+<td>Bill of Materials  -  the Project -&gt; Assembly -&gt; Sub-assembly -&gt; Part tree</td>
+</tr>
+<tr>
+<td><strong>Operation / Route</strong></td>
+<td>The ordered list of process steps for a part (e.g. Laser Cut -&gt; Bend -&gt; Weld -&gt; FINAL_DIM_QC)</td>
+</tr>
+<tr>
+<td><strong>Work Order (WO)</strong></td>
+<td>Shop-floor authorisation to manufacture; belongs to an Assembly</td>
+</tr>
+<tr>
+<td><strong>Production Job</strong></td>
+<td>A single operation of a part scheduled on a machine, e.g. <code>PJ-4102</code></td>
+</tr>
+<tr>
+<td><strong>Nesting / Nest</strong></td>
+<td>Layout of parts on a raw sheet for cutting, e.g. <code>NEST-0261</code></td>
+</tr>
+<tr>
+<td><strong>Outsource Order</strong></td>
+<td>A subcontracted process package, e.g. <code>OUT-0261</code>, requested via an <strong>RFQ</strong></td>
+</tr>
+<tr>
+<td><strong>RFQ</strong></td>
+<td>Request For Quotation sent to a supplier</td>
+</tr>
+<tr>
+<td><strong>QC Inspection</strong></td>
+<td>A quality check record; types: <code>INCOMING</code>, <code>IN_PROCESS</code>, <code>FINAL_DIM_QC</code></td>
+</tr>
+<tr>
+<td><strong>FINAL_DIM_QC</strong></td>
+<td>Final dimensional quality control  -  the mandatory last gate before a part is "Ready for Assembly"</td>
+</tr>
+<tr>
+<td><strong>NCR</strong></td>
+<td>Non-Conformance Report  -  a logged quality/operational defect, e.g. <code>NCR-018</code></td>
+</tr>
+<tr>
+<td><strong>Material grade</strong></td>
+<td>Steel specification, e.g. <code>S235JR</code>, <code>S355JR</code>, <code>SS304</code>, <code>SS316</code></td>
+</tr>
+<tr>
+<td><strong>Press brake</strong></td>
+<td>Machine that bends sheet metal</td>
+</tr>
+<tr>
+<td><strong>EGP</strong></td>
+<td>Egyptian Pound  -  the currency used throughout the seed data</td>
+</tr>
+<tr>
+<td><strong>SPA</strong></td>
+<td>Single-Page Application</td>
+</tr>
+</tbody>
+</table>
+<h2 id="15-references">1.5 References</h2>
+<ul>
+<li>Repository <code>README.md</code> and <code>osta/README.md</code>  -  quick start and architecture map.</li>
+<li><code>marketing/video-kit.md</code>  -  demo script and the canonical "golden path" click-through.</li>
+<li>Source of truth for the data model: <code>src/types/index.ts</code>.</li>
+<li>Source of truth for routing: <code>src/App.tsx</code>.</li>
+</ul>
+<hr />
+<h1 id="2-overall-description">2. Overall description</h1>
+<h2 id="21-product-perspective">2.1 Product perspective</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>MVP (this repo)</th>
+<th>Target (production)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Delivery</td>
+<td>Static SPA (Vite build)</td>
+<td>SPA + multi-tenant API + Postgres</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>In-memory arrays in <code>src/data/*</code></td>
+<td>Database, per-organisation (tenant) rows</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>None</td>
+<td>Auth provider + RBAC + org membership</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>None (refresh = reset)</td>
+<td>Durable, audited, backed up</td>
+</tr>
+<tr>
+<td>Integrations</td>
+<td>None (import buttons are stubs)</td>
+<td>BOM import, PDM, nesting reports, MES, supplier portal</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td>Hash router (<code>/#/...</code>)</td>
+<td>History router with auth guards</td>
+</tr>
+</tbody>
+</table>
+<p>The front end is deliberately structured so that <strong>only <code>src/data/</code> changes</strong> when a
+backend is added (Section 3.4).</p>
+<h2 id="22-product-functions-summary">2.2 Product functions (summary)</h2>
+<ol>
+<li>Present a <strong>Command Center</strong> dashboard: KPIs, a horizontal production-flow view
+   with per-stage counts and delays, an operational-risk feed, an on-time-delivery
+   trend, and an outsourcing snapshot.</li>
+<li>List and filter <strong>Projects</strong>; open a <strong>Project workspace</strong> with phase progress and
+   seven tabs (Overview, Assemblies, BOM, Parts, Production, Outsourcing, QC).</li>
+<li>Drill Project -&gt; Assembly -&gt; Part with <strong>breadcrumbs</strong>, each crumb linking to its
+   object.</li>
+<li>Show a <strong>Part detail</strong> page: specification, a vertical manufacturing timeline with
+   the current operation highlighted, the FINAL_DIM_QC gate, material position, and a
+   "Workflow Connections" panel linking the part to every other module.</li>
+<li>Provide an <strong>Outsourcing Control Center</strong> and per-job detail with a
+   Released -&gt; Received delivery stepper and action buttons (Send RFQ, Upload
+   Documents, Mark Received).</li>
+<li>Provide a <strong>Production board</strong> (Kanban: Ready -&gt; In Production -&gt; QC -&gt; Complete -&gt;
+   Blocked) with drag-and-drop and rule enforcement.</li>
+<li>Provide a <strong>BOM tree</strong>, <strong>Materials</strong> inventory with shortage alerts, <strong>Nesting</strong>
+   list + illustrative sheet layout, <strong>QC</strong> dashboard, <strong>NCR/Issues</strong> register,
+   <strong>CAD/CAM</strong>, <strong>Inventory</strong>, <strong>Suppliers</strong>, <strong>Analytics</strong>, <strong>Settings</strong>.</li>
+<li>Provide a <strong>global command palette</strong> (Ctrl/Cmd+K) that searches every entity and
+   groups results by module.</li>
+<li>Show meaningful <strong>empty / loading / blocked</strong> states and <strong>toast</strong> notifications
+   for actions.</li>
+</ol>
+<h2 id="23-user-classes-characteristics">2.3 User classes &amp; characteristics</h2>
+<table>
+<thead>
+<tr>
+<th>Persona</th>
+<th>Goals</th>
+<th>Primary screens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Operations / Production Manager</strong></td>
+<td>See what is active, delayed, and where the bottleneck is</td>
+<td>Command Center, Projects, Production</td>
+</tr>
+<tr>
+<td><strong>Production Planner</strong></td>
+<td>Sequence work, manage the board, watch due dates</td>
+<td>Production, Nesting, Project &gt; Production tab</td>
+</tr>
+<tr>
+<td><strong>CAD/CAM Engineer</strong></td>
+<td>Track revisions, programmes, machine posting</td>
+<td>CAD/CAM, Part detail, Nesting</td>
+</tr>
+<tr>
+<td><strong>Procurement Manager</strong></td>
+<td>Manage RFQs, suppliers, outsourced delivery, material shortages</td>
+<td>Outsourcing, Suppliers, Materials</td>
+</tr>
+<tr>
+<td><strong>QC Inspector / Manager</strong></td>
+<td>Track inspections, enforce the final gate, manage NCRs</td>
+<td>QC, NCR/Issues, Part detail</td>
+</tr>
+<tr>
+<td><strong>Engineering Manager</strong></td>
+<td>Project health, BOM release status</td>
+<td>Projects, Project detail, BOM</td>
+</tr>
+<tr>
+<td><strong>Factory Owner / Investor</strong></td>
+<td>60-second read of operational health</td>
+<td>Command Center, Analytics</td>
+</tr>
+</tbody>
+</table>
+<h2 id="24-operating-environment">2.4 Operating environment</h2>
+<ul>
+<li><strong>Browsers:</strong> current Chrome, Edge, Firefox, Safari (evergreen). Desktop-first.</li>
+<li><strong>Target resolution:</strong> 1440x900 primary; 1280x800 supported; tablet/mobile
+  simplified (sidebar collapses below 1180 px).</li>
+<li><strong>Toolchain:</strong> Node.js &gt;= 20 (built with Node 24), npm.</li>
+<li><strong>No server runtime</strong> for the MVP; the production build is static files.</li>
+</ul>
+<h2 id="25-design-implementation-constraints">2.5 Design &amp; implementation constraints</h2>
+<ul>
+<li>Stack is fixed: **React 19 + TypeScript + Vite + Tailwind CSS v3 + React Router v7</li>
+<li>lucide-react**. <code>recharts</code> is installed but currently unused (charts are
+  hand-drawn SVG); keep or remove deliberately.</li>
+<li><strong>Dark-first</strong> industrial visual design; a single committed theme (no light mode in
+  the MVP). Tokens in <code>src/index.css</code> <code>:root</code>.</li>
+<li>Hash routing so the static build works on any host without rewrite rules.</li>
+<li><code>tsconfig.app.json</code> has <code>verbatimModuleSyntax: true</code> (use <code>import type</code>),
+  <code>erasableSyntaxOnly: true</code> (no enums / no TS parameter properties). <code>noUnusedLocals</code>
+  / <code>noUnusedParameters</code> were relaxed to <code>false</code> for MVP velocity  -  re-enable before
+  production.</li>
+<li>No secrets in the repo. The mock build must remain the sales demo (never demo on
+  real customer data).</li>
+</ul>
+<h2 id="26-assumptions-dependencies">2.6 Assumptions &amp; dependencies</h2>
+<ul>
+<li>All monetary values are <strong>EGP</strong>; weights are <strong>metric tonnes / kg</strong>; the reference
+  "today" for relative dates is <strong>2026-09-07</strong> (<code>TODAY</code> in <code>src/lib/format.ts</code>).</li>
+<li>Seed data models an Egyptian fabrication shop (customers, suppliers, machines).</li>
+<li>External libraries are pinned via <code>package-lock.json</code>.</li>
+</ul>
+<hr />
+<h1 id="3-system-architecture">3. System architecture</h1>
+<h2 id="31-technology-stack-as-built">3.1 Technology stack (as built)</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI runtime</td>
+<td>React / React DOM</td>
+<td>19.2</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>TypeScript</td>
+<td>~6.0</td>
+</tr>
+<tr>
+<td>Build / dev server</td>
+<td>Vite</td>
+<td>8.2</td>
+</tr>
+<tr>
+<td>Styling</td>
+<td>Tailwind CSS v3 + hand-written component CSS</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td>react-router-dom (<code>HashRouter</code>)</td>
+<td>7.18</td>
+</tr>
+<tr>
+<td>Icons</td>
+<td>lucide-react (wrapped by <code>components/Icon.tsx</code>)</td>
+<td>1.42</td>
+</tr>
+<tr>
+<td>Class utility</td>
+<td>clsx (via <code>lib/cn.ts</code>)</td>
+<td>2.1</td>
+</tr>
+<tr>
+<td>Charts</td>
+<td>Inline SVG (<code>components/charts.tsx</code>); recharts installed, unused</td>
+<td>3.10</td>
+</tr>
+<tr>
+<td>Lint</td>
+<td>oxlint</td>
+<td>1.79</td>
+</tr>
+</tbody>
+</table>
+<p>No state-management library  -  React <code>useState</code> / <code>useContext</code> only. No data-fetching
+library yet (add TanStack Query with the backend).</p>
+<h2 id="32-repository-layout">3.2 Repository layout</h2>
+<pre><code>osta/
+  index.html                 # Vite entry; loads Google Fonts (Archivo/Inter/IBM Plex Mono)
+  src/
+    main.tsx                 # createRoot + &lt;HashRouter&gt;&lt;App/&gt;&lt;/HashRouter&gt;
+    App.tsx                  # &lt;ToastProvider&gt; + &lt;Routes&gt; (see 3.5)
+    index.css                # design tokens (:root) + all component CSS + responsive rules
+    types/index.ts           # ALL domain interfaces (Section 4)
+    lib/
+      cn.ts                  # cn(), hexA(), mulberry32()
+      format.ts              # TODAY, fmtInt, fmtEGP, fmtT, fmtDate, fmtDateShort, daysFromToday
+      status.ts              # MFG, PROJ_STATUS, OUT_STATUS, OUT_STEPS, TONE_HEX, toneColor()
+    data/
+      projects.ts assemblies.ts parts.ts materials.ts machines.ts
+      suppliers.ts outsource.ts jobs.ts qc.ts issues.ts nesting.ts
+      misc.ts                # FLOW, RISKS, KPIS, ONTIME_TREND, OUT_SPEND, EXPOSURE_BY_GRADE,
+                             #   STOCK, MOVES, RULES
+      index.ts               # re-exports + selectors + buildSearchIndex() + connectionsFor()
+    components/
+      Icon.tsx               # string name -&gt; lucide component map
+      ManufacturingStatus.tsx# &lt;Pill&gt;, &lt;MfgStatus&gt;, &lt;ProjStatus&gt;  (the required shared status component)
+      ui.tsx                 # &lt;Panel&gt; &lt;Bar&gt; &lt;Empty&gt; &lt;PageHead&gt; &lt;Crumbs&gt;
+      charts.tsx             # &lt;Spark&gt; &lt;BarsH&gt; &lt;AreaTrend&gt;
+      tables.tsx             # &lt;PartsTable&gt; &lt;OutsourceTable&gt; &lt;QcTable&gt;
+      FlowStages.tsx         # dashboard production-flow strip
+      SheetView.tsx          # illustrative nesting sheet (deterministic shelf pack)
+      BomTree.tsx            # collapsible BOM tree (used by Bom page and Project&gt;BOM tab)
+      CommandPalette.tsx     # Ctrl/Cmd+K global search overlay
+    layout/
+      AppLayout.tsx          # .app grid: &lt;Sidebar&gt; + &lt;main&gt;(&lt;Topbar/&gt; + &lt;Outlet/&gt;) + &lt;CommandPalette&gt;
+      Sidebar.tsx            # grouped nav (Command Center / Engineering / Materials / Quality / System)
+      Topbar.tsx             # (merged into AppLayout) breadcrumbs + date + search + bell + avatar
+      ToastProvider.tsx      # context + useToast() + toast viewport
+      crumbs.ts              # resolveCrumbs(pathname) -&gt; Crumb[]
+    pages/                   # one file per screen (Section 5)
+  docs/                      # this document
+  marketing/                 # video kit
+  osta-mvp.html (repo root as osta-mvp.single-file.html)  # zero-toolchain CDN build of the same app
+</code></pre>
+<h2 id="33-runtime-architecture">3.3 Runtime architecture</h2>
+<ul>
+<li><code>main.tsx</code> mounts <code>&lt;HashRouter&gt;&lt;App/&gt;&lt;/HashRouter&gt;</code>.</li>
+<li><code>App.tsx</code> wraps everything in <code>&lt;ToastProvider&gt;</code> and declares a single layout route
+  <code>&lt;AppLayout&gt;</code> with all pages as children; <code>&lt;Outlet/&gt;</code> renders the active page.</li>
+<li><code>AppLayout</code> owns: the sidebar, the top bar (breadcrumbs via <code>resolveCrumbs</code>, date,
+  search trigger, notifications, avatar), the <code>Ctrl/Cmd+K</code> key handler, the mobile
+  nav toggle, and mounts <code>&lt;CommandPalette&gt;</code>.</li>
+<li>Pages read data <strong>synchronously</strong> from <code>src/data</code> selectors and render. There is no
+  loading state today because data is in memory; the components are written so a
+  <code>loading</code> branch can be added when selectors become async.</li>
+<li>Local, ephemeral UI state only (filters, board columns, palette query). The
+  Production board keeps a local <code>useState</code> copy of jobs so drag-and-drop mutations
+  are visible but not persisted.</li>
+</ul>
+<h2 id="34-data-layer-the-backend-seam-most-important-section-for-a-backend-dev">3.4 Data layer &amp; the backend seam  <em>(most important section for a backend dev)</em></h2>
+<p>Every page imports from <strong><code>src/data/index.ts</code></strong> and never from a network client.
+<code>index.ts</code> today:</p>
+<ol>
+<li><code>export *</code> from each entity file (the raw arrays), and</li>
+<li>defines <strong>selector functions</strong>  -  <code>findProject(code)</code>, <code>findPart(id)</code>,
+   <code>assemblyParts(code)</code>, <code>projectParts(code)</code>, <code>findOut(id)</code>, <code>findNest(id)</code>,
+   <code>findSupplier(id)</code>, <code>findMat(grade, thk)</code>, <code>findMachine(name)</code>, <code>findIssue(id)</code>,
+   <code>buildSearchIndex()</code>, <code>connectionsFor(partId)</code>.</li>
+</ol>
+<p><strong>To attach a backend:</strong> replace the bodies of these selectors with API calls and
+change their return types to <code>Promise&lt;T&gt;</code> (or wrap them in TanStack Query hooks such
+as <code>useProject(code)</code>), then update pages to handle the pending/error states. No
+component's JSX structure needs to change  -  they already consume selectors, not
+imports of raw arrays. Recommended concrete steps:</p>
+<ul>
+<li>Add <code>src/lib/api.ts</code> (typed client) and <code>src/data/queries.ts</code> (hooks).</li>
+<li>Keep <code>src/types/index.ts</code> as the shared contract between client and server
+  (or generate it from the API schema).</li>
+<li>Move the business rules (Section 6) server-side as invariants so the API cannot be
+  used to bypass them.</li>
+</ul>
+<h2 id="35-routing-map-from-srcapptsx-hash-prefixed-at-runtime">3.5 Routing map (from <code>src/App.tsx</code>, hash-prefixed at runtime)</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td><code>Dashboard</code></td>
+<td>index route</td>
+</tr>
+<tr>
+<td><code>/projects</code></td>
+<td><code>Projects</code></td>
+<td>filterable table</td>
+</tr>
+<tr>
+<td><code>/projects/:code</code></td>
+<td><code>ProjectDetail</code></td>
+<td>default tab = Overview</td>
+</tr>
+<tr>
+<td><code>/projects/:code/:tab</code></td>
+<td><code>ProjectDetail</code></td>
+<td><code>tab</code> in {overview, assemblies, bom, parts, production, outsourcing, qc}</td>
+</tr>
+<tr>
+<td><code>/projects/:code/asm/:asm</code></td>
+<td><code>AssemblyView</code></td>
+<td>assembly detail (declared before <code>:code/:tab</code> so <code>asm</code> wins)</td>
+</tr>
+<tr>
+<td><code>/parts</code></td>
+<td><code>Parts</code></td>
+<td>global parts table + filters</td>
+</tr>
+<tr>
+<td><code>/parts/:id</code></td>
+<td><code>PartDetail</code></td>
+<td>part lifecycle + connections</td>
+</tr>
+<tr>
+<td><code>/production</code></td>
+<td><code>Production</code></td>
+<td>Kanban board</td>
+</tr>
+<tr>
+<td><code>/outsourcing</code></td>
+<td><code>Outsourcing</code></td>
+<td>control-center table + KPIs</td>
+</tr>
+<tr>
+<td><code>/outsourcing/:id</code></td>
+<td><code>OutsourcingDetail</code></td>
+<td>accepts <code>OUT-xxxx</code> or <code>RFQ-xxxx</code></td>
+</tr>
+<tr>
+<td><code>/bom</code></td>
+<td><code>Bom</code></td>
+<td>all-projects BOM tree</td>
+</tr>
+<tr>
+<td><code>/cadcam</code></td>
+<td><code>CadCam</code></td>
+<td>programmes list + model/revision panel</td>
+</tr>
+<tr>
+<td><code>/nesting</code></td>
+<td><code>Nesting</code></td>
+<td>nest cards with sheet previews</td>
+</tr>
+<tr>
+<td><code>/nesting/:id</code></td>
+<td><code>NestingDetail</code></td>
+<td>full sheet layout + nest data</td>
+</tr>
+<tr>
+<td><code>/materials</code></td>
+<td><code>Materials</code></td>
+<td>inventory + shortage alerts</td>
+</tr>
+<tr>
+<td><code>/inventory</code></td>
+<td><code>Inventory</code></td>
+<td>stock by rack/lot + movements</td>
+</tr>
+<tr>
+<td><code>/suppliers</code></td>
+<td><code>Suppliers</code></td>
+<td>supplier cards</td>
+</tr>
+<tr>
+<td><code>/qc</code></td>
+<td><code>Qc</code></td>
+<td>QC dashboard + inspections</td>
+</tr>
+<tr>
+<td><code>/issues</code></td>
+<td><code>Issues</code></td>
+<td>NCR / issues register</td>
+</tr>
+<tr>
+<td><code>/analytics</code></td>
+<td><code>Analytics</code></td>
+<td>trend + WIP + spend + exposure charts</td>
+</tr>
+<tr>
+<td><code>/settings</code></td>
+<td><code>Settings</code></td>
+<td>org profile + rules + integrations (stubs)</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td><code>NotFound</code></td>
+<td>empty state -&gt; back to Command Center</td>
+</tr>
+</tbody>
+</table>
+<h2 id="36-design-system">3.6 Design system</h2>
+<ul>
+<li><strong>Tokens</strong> (<code>src/index.css</code> <code>:root</code>): ground <code>#0B0D10</code>, panels <code>#14171C</code>/<code>#181C22</code>/
+  <code>#1E232B</code>, hairlines <code>#252A32</code>, ink <code>#E7EAEE</code>/<code>#A2ABB6</code>/<code>#6D7681</code>, accent <code>#4C9AFF</code>.
+  Semantic: <code>--ok #35C88F</code>, <code>--warn #E0A63C</code>, <code>--crit #E5484D</code>, <code>--violet #9A7CF0</code>
+  (outsourced), <code>--idle #6D7681</code>.</li>
+<li><strong>Type:</strong> Archivo (display/headings), Inter (body), IBM Plex Mono (part numbers,
+  codes, all figures / <code>tabular-nums</code>).</li>
+<li><strong>Shared status component (required):</strong> <code>components/ManufacturingStatus.tsx</code>
+  exports <code>&lt;Pill tone&gt;</code>, <code>&lt;MfgStatus s&gt;</code> and <code>&lt;ProjStatus s&gt;</code>. <code>MfgStatus</code> states:
+  <code>NOT_STARTED, READY, IN_PRODUCTION, BLOCKED, QC, PASSED, FAILED, OUTSOURCED,
+  COMPLETE</code>  -  one consistent treatment everywhere.</li>
+<li><strong>Layout primitives:</strong> <code>.app</code> (240px sidebar grid), <code>.panel</code>, <code>.tbl</code>, <code>.kpi</code>,
+  <code>.bar</code>, <code>.pill</code>, <code>.btn</code>, <code>.board</code>/<code>.klane</code>/<code>.jcard</code>, <code>.tl</code> (timeline), <code>.flow</code>/
+  <code>.stage</code>, <code>.cmdk*</code>, <code>.toast*</code>  -  all in <code>src/index.css</code>.</li>
+</ul>
+<h2 id="37-build-run">3.7 Build &amp; run</h2>
+<pre><code class="language-bash">npm install
+npm run dev        # http://localhost:5173
+npm run build      # tsc -b &amp;&amp; vite build  -&gt; dist/   (verified clean)
+npm run preview    # serve dist/ locally
+npm run lint       # oxlint
+</code></pre>
+<p>The single-file <code>osta-mvp.single-file.html</code> is an independent build (React via CDN,
+Babel-in-browser). It is kept in sync manually and is only for zero-setup demos.</p>
+<hr />
+<h1 id="4-data-model">4. Data model</h1>
+<h2 id="41-entity-overview">4.1 Entity overview</h2>
+<pre><code>Organization (future) 1---* Project
+Project 1---* Assembly           Assembly 0..1 parent Assembly (sub-assemblies)
+Assembly 1---* Part              Part.id is GLOBALLY UNIQUE (the Part Number)
+Part *---1 Material (by grade+thk)
+Part 1---* Operation (ordered string route incl. FINAL_DIM_QC)
+Part 1---* ProductionJob         ProductionJob *---1 Machine
+Part 0..* OutsourceOrder (part listed in order.parts[])   OutsourceOrder *---1 Supplier, *---1 Project
+Part 1---* QCInspection
+Part | Assembly | Supplier | Material  1---* Issue (NCR, polymorphic ref)
+Nest groups parts by (grade, thk, project)
+</code></pre>
+<h2 id="42-entity-dictionaries">4.2 Entity dictionaries</h2>
+<p>Source of truth: <code>src/types/index.ts</code>. Types below are TypeScript.</p>
+<h3 id="project">Project</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>code</code></td>
+<td>string</td>
+<td>PK, <code>PRJ-NNNNN</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>customer</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>start</code>, <code>due</code></td>
+<td>string</td>
+<td>ISO <code>YYYY-MM-DD</code></td>
+</tr>
+<tr>
+<td><code>progress</code></td>
+<td>number</td>
+<td>0-100 headline %</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>ProjStatusKey</td>
+<td>ENGINEERING | MATERIAL | NESTING | IN_PRODUCTION | OUTSOURCED | QC | ASSEMBLY | DELIVERY | DELAYED</td>
+</tr>
+<tr>
+<td><code>phases</code></td>
+<td>Record<string, number></td>
+<td>Engineering/Material/Nesting/Fabrication/Assembly/QC/Delivery each 0-100</td>
+</tr>
+</tbody>
+</table>
+<h3 id="assembly">Assembly</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>code</code></td>
+<td>string</td>
+<td>PK, <code>ASM-NNN</code> or <code>ASM-NNN.M</code> for sub-assemblies</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>project</code></td>
+<td>string</td>
+<td>FK -&gt; Project.code</td>
+</tr>
+<tr>
+<td><code>parent</code></td>
+<td>string | null</td>
+<td>FK -&gt; Assembly.code (sub-assembly)</td>
+</tr>
+<tr>
+<td><code>completion</code></td>
+<td>number</td>
+<td>0-100</td>
+</tr>
+<tr>
+<td><code>currentOp</code></td>
+<td>string</td>
+<td>human label</td>
+</tr>
+</tbody>
+</table>
+<h3 id="part-the-identity-object">Part  <em>(the identity object)</em></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td><strong>PK, globally unique Part Number</strong> <code>P-NNNNNN</code></td>
+</tr>
+<tr>
+<td><code>desc</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>project</code></td>
+<td>string</td>
+<td>FK -&gt; Project.code</td>
+</tr>
+<tr>
+<td><code>assembly</code></td>
+<td>string</td>
+<td>FK -&gt; Assembly.code</td>
+</tr>
+<tr>
+<td><code>grade</code></td>
+<td>string</td>
+<td>material grade</td>
+</tr>
+<tr>
+<td><code>thk</code></td>
+<td>number</td>
+<td>thickness, mm</td>
+</tr>
+<tr>
+<td><code>qty</code></td>
+<td>number</td>
+<td>quantity for the assembly</td>
+</tr>
+<tr>
+<td><code>unitKg</code>, <code>weightKg</code></td>
+<td>number</td>
+<td>unit and total mass</td>
+</tr>
+<tr>
+<td><code>rev</code></td>
+<td>string</td>
+<td>drawing revision (A, B, C, ...)</td>
+</tr>
+<tr>
+<td><code>drawing</code></td>
+<td>string</td>
+<td>drawing number</td>
+</tr>
+<tr>
+<td><code>cad</code></td>
+<td>string</td>
+<td>CAD file name</td>
+</tr>
+<tr>
+<td><code>ops</code></td>
+<td>string[]</td>
+<td>ordered route; <strong>always contains <code>FINAL_DIM_QC</code></strong>, ends with <code>Ready for Assembly</code></td>
+</tr>
+<tr>
+<td><code>opIndex</code></td>
+<td>number</td>
+<td>index into <code>ops</code> of the current step</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>MfgStatusKey</td>
+<td>NOT_STARTED | READY | IN_PRODUCTION | BLOCKED | QC | PASSED | FAILED | OUTSOURCED | COMPLETE</td>
+</tr>
+<tr>
+<td><code>machine</code></td>
+<td>string | null</td>
+<td>current machine name</td>
+</tr>
+<tr>
+<td><code>outsource</code></td>
+<td>string | null</td>
+<td>FK -&gt; OutsourceOrder.id</td>
+</tr>
+<tr>
+<td><code>qcState</code></td>
+<td>'NONE' | 'PENDING' | 'PASSED' | 'FAILED'</td>
+<td>FINAL_DIM_QC result</td>
+</tr>
+<tr>
+<td><code>note</code></td>
+<td>string | null</td>
+<td>blocker / context text</td>
+</tr>
+<tr>
+<td><code>matKey</code></td>
+<td>string | null</td>
+<td>derived <code>grade-thk</code> key into Material</td>
+</tr>
+</tbody>
+</table>
+<h3 id="material">Material</h3>
+<p><code>grade, thk, family, avail, reserved, required, price</code> (EGP/tonne); derived
+<code>key = grade-thk</code> and <code>shortage = max(0, required - (avail - reserved))</code>.</p>
+<h3 id="machine">Machine</h3>
+<p><code>id, name, group</code> (Laser Cutting / Punching / Press Brake / CNC Turning / CNC Milling
+/ Welding / Quality), <code>util</code> %, <code>queue</code> (parts).</p>
+<h3 id="supplier">Supplier</h3>
+<p><code>id (SUP-NN), name, city, processes[], rating (0-5), onTime %, capacity %, contact,
+phone, email</code>.</p>
+<h3 id="outsourceorder">OutsourceOrder</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>PK <code>OUT-NNNN</code></td>
+</tr>
+<tr>
+<td><code>rfq</code></td>
+<td>string</td>
+<td><code>RFQ-NNNN</code> (alt lookup key)</td>
+</tr>
+<tr>
+<td><code>supplier</code></td>
+<td>string</td>
+<td>FK -&gt; Supplier.id</td>
+</tr>
+<tr>
+<td><code>project</code></td>
+<td>string</td>
+<td>FK -&gt; Project.code</td>
+</tr>
+<tr>
+<td><code>process</code></td>
+<td>string</td>
+<td>Laser Cutting / CNC Machining / Press Brake / Welding / Painting / Powder Coating / Hot-Dip Galvanizing / Plate Rolling</td>
+</tr>
+<tr>
+<td><code>partsCount</code></td>
+<td>number</td>
+<td>headline count</td>
+</tr>
+<tr>
+<td><code>parts</code></td>
+<td>string[]</td>
+<td>FK -&gt; Part.id (itemised where known)</td>
+</tr>
+<tr>
+<td><code>weightT</code></td>
+<td>number</td>
+<td>tonnes</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>number</td>
+<td>quoted EGP</td>
+</tr>
+<tr>
+<td><code>actual</code></td>
+<td>number | null</td>
+<td>actual EGP</td>
+</tr>
+<tr>
+<td><code>due</code></td>
+<td>string</td>
+<td>need date</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>string</td>
+<td>RFQ sent date</td>
+</tr>
+<tr>
+<td><code>eta</code></td>
+<td>string | null</td>
+<td>expected delivery</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>OutStatusKey</td>
+<td>RFQ_SENT | RELEASED | MATERIAL_CONFIRMED | PRODUCTION | QC | DISPATCH | RECEIVED | AT_RISK</td>
+</tr>
+<tr>
+<td><code>note</code></td>
+<td>string?</td>
+<td>risk / status context</td>
+</tr>
+</tbody>
+</table>
+<p>Delivery step order: <code>OUT_STEPS = [RELEASED, MATERIAL_CONFIRMED, PRODUCTION, QC,
+DISPATCH, RECEIVED]</code>; <code>OUT_STATUS[status].step</code> maps a status onto that axis
+(<code>AT_RISK</code> -&gt; step 2, <code>RFQ_SENT</code> -&gt; -1).</p>
+<h3 id="productionjob">ProductionJob</h3>
+<p><code>id (PJ-NNNN), part (FK), op, machine, operator, qty, due, progress 0-100,
+col ('READY'|'IN_PRODUCTION'|'QC'|'COMPLETE'|'BLOCKED'), block? (reason string)</code>.</p>
+<h3 id="qcinspection">QCInspection</h3>
+<p><code>id (QC-NNNN), part (FK), type ('INCOMING'|'IN_PROCESS'|'FINAL_DIM_QC'),
+result ('PASSED'|'FAILED'|'PENDING'), date, inspector, note</code>.</p>
+<h3 id="issue-ncr">Issue (NCR)</h3>
+<p><code>id (NCR-NNN), ref (Part.id | Assembly.code | Supplier.id | Material.key),
+refType ('part'|'assembly'|'supplier'|'material'), severity ('Critical'|'Major'|
+'Minor'), status ('Open'|'In Rework'|'Closed'), opened, owner, title, assembly?</code>.</p>
+<h3 id="nest">Nest</h3>
+<p><code>id (NEST-NNNN), project (FK), grade, thk, sheetW, sheetL (mm), parts (count),
+util (%), machine, status ('READY'|'RUNNING'|'QUEUED'|'BELOW_TARGET')</code>.
+<code>NEST_TARGET = 80</code> (%).</p>
+<h3 id="support-datasets-datamiscts">Support datasets (<code>data/misc.ts</code>)</h3>
+<p><code>FLOW</code> (8 stages: key, count, delayed, status), <code>RISKS</code>, <code>KPIS</code>, <code>ONTIME_TREND</code>,
+<code>OUT_SPEND</code>, <code>EXPOSURE_BY_GRADE</code>, <code>STOCK</code>, <code>MOVES</code>, <code>RULES</code>.</p>
+<h2 id="43-identity-referential-rules">4.3 Identity &amp; referential rules</h2>
+<ul>
+<li><strong>Part Number is unique and immutable.</strong> The same <code>P-xxxxxx</code> string is the join key
+  across BOM, Nesting, Production, Outsourcing and QC. Enforce as a unique constraint
+  per organisation in the database.</li>
+<li><strong>Manufacturing context = Project code + Assembly code.</strong> A Work Order is scoped to
+  exactly one <code>(project, assembly)</code> pair.</li>
+<li>All <code>*_id</code> / <code>*_code</code> fields listed as FK must be enforced as foreign keys server-side.</li>
+</ul>
+<h2 id="44-derived-data">4.4 Derived data</h2>
+<ul>
+<li><code>buildSearchIndex()</code> -&gt; flat <code>SearchEntry[]</code> over Projects, Assemblies, Parts,
+  OutsourceOrders, Nests, Materials, Suppliers, Issues (used by the command palette).</li>
+<li><code>connectionsFor(partId)</code> -&gt; <code>Connection[]</code>: for a given part it assembles links to
+  its Project, Assembly, BOM line, Material, Nest, Production Job, Outsource Order,
+  QC inspections and Issues. This function encodes the "one part, every module"
+  principle and should be reproduced as a backend endpoint
+  (<code>GET /parts/:id/connections</code>).</li>
+<li>KPIs and risk cards in the MVP are partly curated constants; in production they are
+  computed queries.</li>
+</ul>
+<hr />
+<h1 id="5-functional-requirements">5. Functional requirements</h1>
+<p>Notation: <strong>FR-<module>.<n></strong>. "Shall" = required. Acceptance criteria are testable.
+Where a requirement is only partially met by the MVP it is marked <em>(MVP: partial)</em>.</p>
+<h2 id="51-application-shell-navigation">5.1 Application shell &amp; navigation</h2>
+<ul>
+<li><strong>FR-SHELL.1</strong> The app shall present a persistent left sidebar with the OSTA logo,
+  five grouped sections (Command Center, Engineering, Materials, Quality, System) and
+  the footer block "OSTA MVP / Operations System Assistant".</li>
+<li><strong>FR-SHELL.2</strong> The active route shall be highlighted in the sidebar.</li>
+<li><strong>FR-SHELL.3</strong> A top bar shall show breadcrumbs, the current date, a search
+  trigger (with <code>Cmd/Ctrl+K</code> hint), a notifications icon, and a user avatar.</li>
+<li><strong>FR-SHELL.4</strong> Breadcrumbs shall be generated from the current path and every crumb
+  except the last shall be a link to its object (<code>resolveCrumbs</code> in <code>layout/crumbs.ts</code>).
+  Example: <code>OSTA / Projects / PRJ-26001 / ASM-001.1 / P-001245</code>.</li>
+<li><strong>FR-SHELL.5</strong> Below 1180 px the sidebar shall collapse and be toggled by a menu
+  button in the top bar.</li>
+<li><strong>FR-SHELL.6</strong> Actions that mutate or would call a backend shall surface a <strong>toast</strong>
+  (<code>useToast</code>); toasts auto-dismiss after ~3.6 s.</li>
+</ul>
+<h2 id="52-command-center">5.2 Command Center (<code>/</code>)</h2>
+<ul>
+<li><strong>FR-DASH.1</strong> Display six KPI cards: Active Projects, Parts in Production,
+  Outsourced Parts, Material Exposure (EGP), At Risk, On-Time Delivery  -  each with a
+  trend direction and a sparkline.</li>
+<li><strong>FR-DASH.2</strong> Display the <strong>Production Flow</strong> strip: eight stages
+  (Engineering, Material, Nesting, Cutting, Bending, Welding, QC, Assembly), each
+  showing count, delayed count and a status tint; the bottleneck stage
+  (<code>status = 'crit'</code>) shall be visually emphasised.</li>
+<li><strong>FR-DASH.3</strong> Display an <strong>Operational Risks</strong> list; each row shows a severity dot,
+  title, meta line and a tag, and links to the relevant object.</li>
+<li><strong>FR-DASH.4</strong> Display an <strong>On-Time Delivery</strong> area chart with a target line and the
+  <strong>Outsourcing Snapshot</strong> counts by state.</li>
+<li><strong>FR-DASH.5</strong> Display the first six projects in a table; a row click opens the
+  project.</li>
+<li><strong>FR-DASH.6</strong> A first-time user shall be able to answer "what's active / outsourced
+  / in production / delayed / where's the bottleneck / what's at risk" within ~60 s
+  from this page alone.</li>
+</ul>
+<h2 id="53-projects-projects">5.3 Projects (<code>/projects</code>)</h2>
+<ul>
+<li><strong>FR-PROJ.1</strong> List all projects with columns: Project (code + name), Customer,
+  Progress bar, Assemblies, Parts, Material weight, Outsourced value, Delivery
+  (date + days remaining/late), Status.</li>
+<li><strong>FR-PROJ.2</strong> Provide quick filters: All, In Production, Material, Quality,
+  Assembly, At Risk (<code>status in {MATERIAL, DELAYED}</code> OR due within 10 days).</li>
+<li><strong>FR-PROJ.3</strong> A row click navigates to <code>/projects/:code</code>.</li>
+</ul>
+<h2 id="54-project-detail-projectscodetab">5.4 Project detail (<code>/projects/:code[/:tab]</code>)</h2>
+<ul>
+<li><strong>FR-PDET.1</strong> Header shows code, name, customer, start, delivery, days remaining/
+  late, status pill, and a "Status pack" action <em>(MVP: toast stub)</em>.</li>
+<li><strong>FR-PDET.2</strong> "Project Progress" panel shows the seven phase bars from
+  <code>project.phases</code>.</li>
+<li><strong>FR-PDET.3</strong> "At a glance" panel shows assembly count, part count, material
+  weight, outsourced value, and open NCR count (computed from issues referencing the
+  project's assemblies).</li>
+<li><strong>FR-PDET.4</strong> Tab bar: Overview, Assemblies, BOM, Parts, Production, Outsourcing,
+  QC. The tab is the <code>:tab</code> path segment; unknown/absent = Overview.</li>
+<li><strong>FR-PDET.5 Overview</strong> shows an assemblies mini-table and a recent-activity feed.</li>
+<li><strong>FR-PDET.6 Assemblies</strong> lists top-level assemblies with parts/weight/completion/
+  current-op and nested sub-assemblies; each links to the assembly view. If none:
+  a meaningful empty state with an "Import assemblies" stub.</li>
+<li><strong>FR-PDET.7 BOM</strong> renders the <code>BomTree</code> scoped to this project.</li>
+<li><strong>FR-PDET.8 Parts</strong> renders <code>PartsTable</code> for the project's parts (or empty state).</li>
+<li><strong>FR-PDET.9 Production</strong> lists the project's production jobs (or empty state).</li>
+<li><strong>FR-PDET.10 Outsourcing</strong> renders <code>OutsourceTable</code> for the project (or empty state).</li>
+<li><strong>FR-PDET.11 QC</strong> renders <code>QcTable</code> for inspections of the project's parts (or empty
+  state).</li>
+</ul>
+<h2 id="55-assembly-view-projectscodeasmasm">5.5 Assembly view (<code>/projects/:code/asm/:asm</code>)</h2>
+<ul>
+<li><strong>FR-ASM.1</strong> Header shows assembly code + name, parent project, and (if a
+  sub-assembly) its parent assembly.</li>
+<li><strong>FR-ASM.2</strong> Five metric cards: Parts, Material Weight, Completion, Current
+  Operation, Outsourced (n / total).</li>
+<li><strong>FR-ASM.3</strong> Parts table: Part No, Description (+ rev, drawing), Material,
+  Thickness, Qty, Operation route (mid-route steps), Status. Row click opens the part.</li>
+<li><strong>FR-ASM.4</strong> A chip shall show how many parts are "ready for assembly"
+  (<code>status = READY</code>).</li>
+</ul>
+<h2 id="56-part-detail-partsid">5.6 Part detail (<code>/parts/:id</code>)</h2>
+<ul>
+<li><strong>FR-PART.1</strong> Header: part number, description, links to project and assembly,
+  revision, a drawing action <em>(stub)</em>, and the current status pill.</li>
+<li><strong>FR-PART.2</strong> If <code>status in {BLOCKED, FAILED}</code> show a prominent red banner with
+  <code>part.note</code>.</li>
+<li><strong>FR-PART.3</strong> <strong>Manufacturing Timeline</strong>: render <code>part.ops</code> as a vertical stepper;
+  steps before <code>opIndex</code> are "done", <code>opIndex</code> is "current" (highlighted, shows the
+  machine), a failed <code>FINAL_DIM_QC</code> renders as "failed".</li>
+<li><strong>FR-PART.4</strong> The <code>FINAL_DIM_QC</code> step shall be labelled "mandatory gate". The final
+  step "Ready for Assembly" shall show "gated  -  FINAL_DIM_QC must pass first" whenever
+  <code>qcState != 'PASSED'</code> (see BR-5).</li>
+<li><strong>FR-PART.5</strong> <strong>Workflow Connections</strong> panel: render <code>connectionsFor(id)</code> as a grid
+  of links (Project, Assembly, BOM, Material, Nesting, Production, Outsourcing, QC,
+  Issues), each navigating to that module.</li>
+<li><strong>FR-PART.6</strong> <strong>Specification</strong> panel: project, assembly, material, thickness,
+  quantity, unit &amp; total weight, revision, drawing, CAD file, current status.</li>
+<li><strong>FR-PART.7</strong> <strong>Final Gate</strong> panel: show <code>FINAL_DIM_QC</code> state; show "Ready for
+  Assembly" as <strong>Released</strong> only if <code>qcState = 'PASSED'</code>, otherwise <strong>Locked</strong>.</li>
+<li><strong>FR-PART.8</strong> <strong>Material Position</strong> panel (if the grade/thk is known): available,
+  required, shortage (red if &gt; 0).</li>
+</ul>
+<h2 id="57-parts-parts">5.7 Parts (<code>/parts</code>)</h2>
+<ul>
+<li><strong>FR-PLIST.1</strong> Global table of all parts with free-text search (id, desc, grade,
+  project, assembly) and a status filter (All, In Production, Outsourced, Ready,
+  Blocked, QC Failed, Not Started).</li>
+</ul>
+<h2 id="58-outsourcing-control-center-outsourcing-outsourcingid">5.8 Outsourcing Control Center (<code>/outsourcing</code>, <code>/outsourcing/:id</code>)</h2>
+<ul>
+<li><strong>FR-OUT.1</strong> KPI row: Active Jobs, Outsourced Value (EGP), Weight Outsourced (t),
+  At Risk count.</li>
+<li><strong>FR-OUT.2</strong> Filter: Active (status != RECEIVED), At Risk (AT_RISK or due &lt; 3 days),
+  All. Table columns: RFQ (+ OUT id), Supplier (+ city), Project, Process, Parts,
+  Weight, Value, Due (+ days), Status.</li>
+<li><strong>FR-OUT.3</strong> Empty state text shall be specific ("No active outsourcing jobs..."),
+  never a generic "No data".</li>
+<li><strong>FR-OUTD.1</strong> Detail header: OUT id, process, supplier, project link, RFQ number.</li>
+<li><strong>FR-OUTD.2</strong> Action buttons: <strong>Send RFQ</strong>, <strong>Upload Documents</strong>, <strong>Mark Received</strong>
+   -  each fires a toast <em>(MVP: stubs)</em>.</li>
+<li><strong>FR-OUTD.3</strong> <strong>Job Progress</strong> stepper across <code>OUT_STEPS</code> with the current step from
+  <code>OUT_STATUS[status].step</code>; <code>AT_RISK</code>/<code>note</code> shown as a coloured banner.</li>
+<li><strong>FR-OUTD.4</strong> Panels: Scope (itemised parts where known, else bulk count),
+  Documents (stub list with download toasts), Supplier (contact card),
+  Commercial (process, parts, weight, quoted vs actual cost, sent/expected/need
+  dates, delivery state).</li>
+</ul>
+<h2 id="59-production-board-production">5.9 Production board (<code>/production</code>)</h2>
+<ul>
+<li><strong>FR-PRODB.1</strong> Five columns: Ready, In Production, QC, Complete, Blocked. Each card
+  shows part number + job id, description, operation, machine, operator, qty, due,
+  and a progress bar (or the block reason for blocked cards).</li>
+<li><strong>FR-PRODB.2</strong> Cards shall be draggable between columns (HTML5 DnD); the drop target
+  highlights.</li>
+<li><strong>FR-PRODB.3</strong> Moving a card whose part has <code>qcState = 'FAILED'</code> into <strong>Complete</strong>
+  shall be <strong>rejected</strong> with a toast ("FINAL_DIM_QC must pass..."). (BR-4/BR-5.)</li>
+<li><strong>FR-PRODB.4</strong> A card click opens the part.</li>
+<li><strong>FR-PRODB.5</strong> Board mutations are local-only in the MVP (not persisted).</li>
+</ul>
+<h2 id="510-bom-bom-and-project-bom-tab">5.10 BOM (<code>/bom</code>, and Project &gt; BOM tab)</h2>
+<ul>
+<li><strong>FR-BOM.1</strong> Render a collapsible tree: Project -&gt; Assembly -&gt; Sub-assembly -&gt; Part.</li>
+<li><strong>FR-BOM.2</strong> Each part row shows qty, grade, thickness, revision and its
+  <code>MfgStatus</code> pill (status rolls up visually).</li>
+<li><strong>FR-BOM.3</strong> Assembly and part codes in the tree are links to their pages;
+  clicking a link shall not toggle the row.</li>
+<li><strong>FR-BOM.4</strong> An "Import BOM" button shall be present <em>(MVP: toast stub)</em>.</li>
+</ul>
+<h2 id="511-materials-materials">5.11 Materials (<code>/materials</code>)</h2>
+<ul>
+<li><strong>FR-MAT.1</strong> KPI row: grades tracked, shortage lines, total shortage (t), reserved
+  exposure (EGP).</li>
+<li><strong>FR-MAT.2</strong> For every material with <code>shortage &gt; 0</code> render a red alert card with
+  required / available / shortage and the EGP value of the shortage. (BR-6.)</li>
+<li><strong>FR-MAT.3</strong> Inventory table: Material, Family, Thickness, Available, Reserved,
+  Required, Shortage, Coverage bar (<code>(avail-reserved)/required</code>).</li>
+</ul>
+<h2 id="512-nesting-nesting-nestingid">5.12 Nesting (<code>/nesting</code>, <code>/nesting/:id</code>)</h2>
+<ul>
+<li><strong>FR-NEST.1</strong> Grid of nest cards: id, status pill, an SVG sheet preview,
+  grade/thickness, part count, utilisation bar vs <code>NEST_TARGET</code> (80%), machine, scrap %.</li>
+<li><strong>FR-NEST.2</strong> Detail: large illustrative sheet layout (<code>SheetView</code>, deterministic
+  shelf-pack  -  explicitly not a real nesting result), a Nest Data panel, a
+  below-target warning when <code>util &lt; NEST_TARGET</code>, and a table of parts on that
+  grade/thickness for the project.</li>
+</ul>
+<h2 id="513-qc-qc">5.13 QC (<code>/qc</code>)</h2>
+<ul>
+<li><strong>FR-QC.1</strong> KPI row: Pending Inspections, Passed (30 d), Failed (30 d), Open NCRs,
+  In Rework.</li>
+<li><strong>FR-QC.2</strong> Filter (All, Pending, Passed, Failed) and an inspections table
+  (<code>QcTable</code>): Inspection, Part, Type (<code>FINAL_DIM_QC</code> marked with <code>*</code>), Result pill,
+  Date, Inspector, Note. Row click opens the part.</li>
+</ul>
+<h2 id="514-ncr-issues-issues">5.14 NCR / Issues (<code>/issues</code>)</h2>
+<ul>
+<li><strong>FR-NCR.1</strong> Register table: NCR id, Against (ref), Title, Severity pill, Status
+  pill, Owner, Opened. Filter: Open, Closed, All.</li>
+<li><strong>FR-NCR.2</strong> A row links to the referenced object (part / supplier / material /
+  assembly) based on <code>refType</code>.</li>
+<li><strong>FR-NCR.3</strong> A "Raise NCR" button shall be present <em>(MVP: stub)</em>.</li>
+</ul>
+<h2 id="515-cadcam-cadcam">5.15 CAD/CAM (<code>/cadcam</code>)</h2>
+<ul>
+<li><strong>FR-CAD.1</strong> Programmes table: Part, CAD file, Revision, CAM status (Not
+  programmed / Programmed / Posted  -  derived from part progress in the MVP), Machine.</li>
+<li><strong>FR-CAD.2</strong> Right panel: an isometric wireframe placeholder for the selected part
+  and a revision history stepper.</li>
+</ul>
+<h2 id="516-inventory-inventory">5.16 Inventory (<code>/inventory</code>)</h2>
+<ul>
+<li><strong>FR-INV.1</strong> Stock-on-hand table by Material, Heat/Lot, Location (rack), Qty (kg),
+  State (Available / Reserved / Quarantine).</li>
+<li><strong>FR-INV.2</strong> Recent movements list (Received / Issued / Reserved / Quarantine) with
+  signed quantities and references.</li>
+</ul>
+<h2 id="517-suppliers-suppliers">5.17 Suppliers (<code>/suppliers</code>)</h2>
+<ul>
+<li><strong>FR-SUP.1</strong> Supplier cards: name, city, processes, star rating, on-time %, active
+  job count, capacity/load bar.</li>
+</ul>
+<h2 id="518-analytics-analytics">5.18 Analytics (<code>/analytics</code>)</h2>
+<ul>
+<li><strong>FR-ANA.1</strong> Four charts (hand-drawn SVG): On-Time Delivery 12-week trend with
+  target; WIP by stage (from <code>FLOW</code>, bottleneck highlighted); Outsourcing spend by
+  process; Material exposure by grade.</li>
+</ul>
+<h2 id="519-settings-settings">5.19 Settings (<code>/settings</code>)</h2>
+<ul>
+<li><strong>FR-SET.1</strong> Organisation panel (workspace, company, location, units = metric,
+  currency = EGP, fiscal year).</li>
+<li><strong>FR-SET.2</strong> "Manufacturing Rules" panel listing the seven OSTA rules (Section 6),
+  each shown as <strong>Enforced</strong>.</li>
+<li><strong>FR-SET.3</strong> Integrations panel (ERP, PDM, MES, MRP) with "Connect" buttons
+  <em>(MVP: "coming soon" toasts)</em>.</li>
+</ul>
+<h2 id="520-global-search-command-palette">5.20 Global search / command palette</h2>
+<ul>
+<li><strong>FR-SEARCH.1</strong> <code>Cmd/Ctrl+K</code> toggles a modal search overlay; <code>Esc</code> closes it.</li>
+<li><strong>FR-SEARCH.2</strong> Typing filters <code>SEARCH_INDEX</code> (substring over label + sub + type +
+  code); results are grouped by entity type; <code>Up/Down</code> move the selection, <code>Enter</code>
+  navigates, a row click navigates.</li>
+<li><strong>FR-SEARCH.3</strong> Searching a part number (e.g. <code>P-001245</code>) shall surface that part
+  and its Project, Assembly, Outsourcing, Nesting and Material entries  -  demonstrating
+  that one identifier connects the whole workflow.</li>
+</ul>
+<h2 id="521-cross-cutting-ui-states">5.21 Cross-cutting UI states</h2>
+<ul>
+<li><strong>FR-STATE.1</strong> Every list/table has a specific <strong>empty state</strong> (icon + title +
+  hint), never a bare "No data".</li>
+<li><strong>FR-STATE.2</strong> Blocked/failed objects show a red banner with the reason.</li>
+<li><strong>FR-STATE.3</strong> Actions show success/info via toasts; destructive/irreversible
+  actions are not present in the MVP.</li>
+<li><strong>FR-STATE.4</strong> <em>(MVP gap)</em> No <code>loading</code> or <code>error</code> states because data is
+  synchronous; these must be added with the backend.</li>
+</ul>
+<hr />
+<h1 id="6-business-rules">6. Business rules</h1>
+<p>These are the defining rules of OSTA. In the MVP they are enforced in the UI; in
+production they <strong>must be enforced in the backend</strong> as invariants.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Rule</th>
+<th>MVP enforcement</th>
+<th>Production requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BR-1</strong></td>
+<td>A Work Order belongs to exactly one Assembly (context = Project code + Assembly code).</td>
+<td>Data model; assembly views scope everything by <code>(project, assembly)</code>.</td>
+<td>FK + WO cannot be created without an assembly.</td>
+</tr>
+<tr>
+<td><strong>BR-2</strong></td>
+<td>A Work Order may exist only when its Assembly contains &gt;= 1 released Part.</td>
+<td>Assemblies tab shows "WO required - blocked" when an assembly has no parts.</td>
+<td>API rejects WO creation for a part-less assembly.</td>
+</tr>
+<tr>
+<td><strong>BR-3</strong></td>
+<td>A Part Number is identical across BOM, Nesting, Production, Outsourcing and QC.</td>
+<td>Single <code>Part.id</code> used as the join key; <code>connectionsFor()</code> proves it; command palette resolves it.</td>
+<td>Unique constraint per org; all modules reference <code>part_id</code>.</td>
+</tr>
+<tr>
+<td><strong>BR-4</strong></td>
+<td>Final dimensional QC (<code>FINAL_DIM_QC</code>) is a mandatory step on every part route.</td>
+<td>Every seed part's <code>ops</code> array contains <code>FINAL_DIM_QC</code>; Part detail labels it "mandatory gate".</td>
+<td>Route templates must include it; validation on route save.</td>
+</tr>
+<tr>
+<td><strong>BR-5</strong></td>
+<td>A Part cannot become "Ready for Assembly" until <code>FINAL_DIM_QC</code> passes.</td>
+<td>Part timeline shows the final step "gated"; Final Gate panel shows <strong>Locked</strong> unless <code>qcState = 'PASSED'</code>; the Production board refuses to move a QC-failed job to <strong>Complete</strong>.</td>
+<td>State machine: <code>PASSED</code> (final QC) is a precondition of <code>READY</code>; API rejects the transition otherwise.</td>
+</tr>
+<tr>
+<td><strong>BR-6</strong></td>
+<td>Material shortages surface automatically as operational risks.</td>
+<td><code>Material.shortage = max(0, required - (avail - reserved))</code>; Materials page renders alert cards; dashboard risk feed lists shortages.</td>
+<td>Computed on write; raises a Risk/alert record and notifies procurement.</td>
+</tr>
+<tr>
+<td><strong>BR-7</strong></td>
+<td>Every outsourced job has an explicit delivery state.</td>
+<td><code>OutsourceOrder.status</code> on the <code>RELEASED -&gt; RECEIVED</code> axis; detail stepper.</td>
+<td>Enforced enum + transition log per order.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="7-external-interface-requirements">7. External interface requirements</h1>
+<h2 id="71-user-interfaces">7.1 User interfaces</h2>
+<p>Desktop-first SPA, dark theme, keyboard: <code>Cmd/Ctrl+K</code> (search), <code>Esc</code> (close overlay),
+<code>Up/Down/Enter</code> (palette). All navigation is client-side.</p>
+<h2 id="72-software-interfaces-to-be-built">7.2 Software interfaces (to be built)</h2>
+<p>The backend contract should mirror the current selectors:</p>
+<table>
+<thead>
+<tr>
+<th>Selector (client, now)</th>
+<th>Proposed endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PROJECTS</code>, <code>findProject(code)</code></td>
+<td><code>GET /projects</code>, <code>GET /projects/:code</code></td>
+</tr>
+<tr>
+<td><code>projectAssemblies</code>, <code>findAssembly</code></td>
+<td><code>GET /projects/:code/assemblies</code>, <code>GET /assemblies/:code</code></td>
+</tr>
+<tr>
+<td><code>projectParts</code>, <code>assemblyParts</code>, <code>findPart</code></td>
+<td><code>GET /parts?project=</code>, <code>?assembly=</code>, <code>GET /parts/:id</code></td>
+</tr>
+<tr>
+<td><code>connectionsFor(id)</code></td>
+<td><code>GET /parts/:id/connections</code></td>
+</tr>
+<tr>
+<td><code>OUTSOURCE</code>, <code>findOut</code></td>
+<td><code>GET /outsource-orders</code>, <code>GET /outsource-orders/:id</code></td>
+</tr>
+<tr>
+<td><code>JOBS</code> + board moves</td>
+<td><code>GET /production-jobs</code>, <code>PATCH /production-jobs/:id</code> (column)</td>
+</tr>
+<tr>
+<td><code>QC</code>, <code>ISSUES</code>, <code>MATERIALS</code>, <code>NESTS</code>, <code>SUPPLIERS</code>, <code>MACHINES</code></td>
+<td><code>GET /qc</code>, <code>/issues</code>, <code>/materials</code>, <code>/nests</code>, <code>/suppliers</code>, <code>/machines</code></td>
+</tr>
+<tr>
+<td><code>buildSearchIndex()</code></td>
+<td><code>GET /search?q=</code></td>
+</tr>
+</tbody>
+</table>
+<p>Recommended: JSON REST or tRPC; TanStack Query on the client; <code>src/types/index.ts</code>
+shared or generated as the DTO contract. Every request is tenant-scoped.</p>
+<h2 id="73-integrations-future-all-optional-additive">7.3 Integrations (future, all optional / additive)</h2>
+<ul>
+<li><strong>BOM import</strong>  -  Excel/CSV upload with column mapping (the "Import BOM" button).</li>
+<li><strong>CAD / PDM</strong>  -  attach STEP/DXF/PDF to parts; later SolidWorks PDM / Autodesk Vault.</li>
+<li><strong>Nesting</strong>  -  import nest reports from TRUMPF TruTops / Lantek / SigmaNEST / Bystronic.</li>
+<li><strong>MES / machines</strong>  -  production status via OPC-UA / MTConnect / vendor MES.</li>
+<li><strong>Supplier portal</strong>  -  scoped external logins so subcontractors update <code>OUT-xxxx</code>
+  state, dates and documents themselves.</li>
+<li>Manual entry must always remain possible.</li>
+</ul>
+<hr />
+<h1 id="8-non-functional-requirements">8. Non-functional requirements</h1>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NFR-PERF.1</strong></td>
+<td>First contentful paint &lt; 1.5 s on a mid laptop over broadband; route changes &lt; 100 ms (client-only). Production build JS is ~360 kB / ~105 kB gzip today.</td>
+</tr>
+<tr>
+<td><strong>NFR-PERF.2</strong></td>
+<td>Tables render up to a few hundred rows without virtualisation; add windowing when a real dataset exceeds ~1k rows.</td>
+</tr>
+<tr>
+<td><strong>NFR-BROWSER.1</strong></td>
+<td>Support the last 2 versions of Chrome, Edge, Firefox, Safari.</td>
+</tr>
+<tr>
+<td><strong>NFR-RESP.1</strong></td>
+<td>Fully usable at 1440x900 and 1280x800; degrade gracefully to tablet (sidebar collapses &lt; 1180 px); mobile is simplified, not a target.</td>
+</tr>
+<tr>
+<td><strong>NFR-A11Y.1</strong></td>
+<td><em>(MVP gap)</em> Needs a pass: focus-visible styles, ARIA on the palette/board/dialogs, keyboard DnD alternative, contrast audit (dark theme already high-contrast), <code>prefers-reduced-motion</code> is already respected.</td>
+</tr>
+<tr>
+<td><strong>NFR-SEC.1</strong></td>
+<td><em>(future)</em> Auth provider; RBAC by persona; per-tenant row-level security; audit log on every state change; no secrets in the repo; HTTPS only.</td>
+</tr>
+<tr>
+<td><strong>NFR-SEC.2</strong></td>
+<td>Business rules (Section 6) enforced server-side, not only in the UI.</td>
+</tr>
+<tr>
+<td><strong>NFR-MAINT.1</strong></td>
+<td>TypeScript strict; re-enable <code>noUnusedLocals</code>/<code>noUnusedParameters</code>; <code>npm run lint</code> (oxlint) clean; one component/concept per file; shared UI only via <code>components/</code>.</td>
+</tr>
+<tr>
+<td><strong>NFR-MAINT.2</strong></td>
+<td>Domain types live in <code>src/types</code>; data access only via <code>src/data</code> (or its successor <code>src/lib/api.ts</code>). Pages never call <code>fetch</code> directly.</td>
+</tr>
+<tr>
+<td><strong>NFR-OBS.1</strong></td>
+<td><em>(future)</em> Error tracking (e.g. Sentry), structured logs, uptime + daily DB backup with a tested restore.</td>
+</tr>
+<tr>
+<td><strong>NFR-I18N.1</strong></td>
+<td>Currency is EGP and dates are <code>en-GB</code> formatted via <code>lib/format.ts</code>; centralise here before adding locales.</td>
+</tr>
+<tr>
+<td><strong>NFR-LICENSE.1</strong></td>
+<td>Confirm licences of all deps (all MIT today) before commercial release; add a <code>LICENSE</code> file.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="9-roadmap-to-production-summary">9. Roadmap to production (summary)</h1>
+<p>Detail is in the project conversation / <code>ROADMAP</code> notes; condensed:</p>
+<ol>
+<li><strong>Wedge:</strong> lead with Outsourcing control + part traceability; everything else stays light.</li>
+<li><strong>Backend:</strong> Postgres + Prisma + typed API; schema from <code>src/types</code>; <code>org_id</code> +
+   row-level security from day one; move BR-1..BR-7 server-side.</li>
+<li><strong>Auth &amp; tenancy:</strong> auth provider, roles per persona, <code>HashRouter -&gt; BrowserRouter</code>
+   with guards, deploy (static FE + managed Postgres + Sentry + backups).</li>
+<li><strong>Ingestion (the adoption blocker):</strong> real BOM Excel import, drawing upload,
+   nesting-report import, manual production updates; every integration optional.</li>
+<li><strong>Stickiness:</strong> comments/activity feed, notifications, audit log, supplier portal,
+   PDF status pack.</li>
+<li><strong>Pilots:</strong> 2-3 design-partner factories; success = the daily production meeting
+   runs on OSTA instead of a spreadsheet.</li>
+</ol>
+<hr />
+<h1 id="appendix-a-route-reference">Appendix A  -  Route reference</h1>
+<p>See Section 3.5. Runtime URLs are hash-prefixed, e.g.
+<code>http://localhost:5173/#/parts/P-001245</code>.</p>
+<h1 id="appendix-b-golden-demo-path-for-smoke-testing">Appendix B  -  Golden demo path (for smoke testing)</h1>
+<p><code>Dashboard</code> -&gt; open <strong>PRJ-26001</strong> (Industrial Conveyor) -&gt; <strong>Assemblies</strong> tab -&gt;
+<strong>ASM-001</strong> -&gt; part <strong>P-001245</strong> (Side Plate, S235JR 6 mm)  -  shown <strong>Blocked</strong> at
+"Material Reserved", 1.7 t short -&gt; from Part detail open <strong>Materials</strong> (S235JR 6 mm
+shortage) -&gt; open <strong>NEST-0261</strong> -&gt; <strong>Production</strong> board -&gt; <strong>OUT-0261</strong> (Cairo
+Precision Fabrication, at risk) -&gt; <strong>QC</strong> -&gt; confirm "Ready for Assembly" is <strong>Locked</strong>
+until <code>FINAL_DIM_QC</code> passes. Then <code>Cmd/Ctrl+K</code> -&gt; type <code>P-001245</code> -&gt; results span
+Project, Assembly, Nesting, Outsourcing, Material.</p>
+<p>Key seed figures: 12 active projects, 486 parts in production, 74 outsourced,
+EGP 1.84M material exposure, 18 at risk, 87% on-time; Cutting is the bottleneck
+(142 in queue, 18 delayed).</p>
+<h1 id="appendix-c-fabrication-glossary">Appendix C  -  Fabrication glossary</h1>
+<p><strong>Laser cutting / punching</strong>  -  sheet cutting processes. <strong>Press brake / bending</strong>  - 
+forming sheet into angles. <strong>Welding</strong>  -  MIG/TIG joining. <strong>Plate rolling</strong>  -  forming
+curved sections. <strong>Galvanizing / powder coating / painting</strong>  -  surface finishing,
+usually outsourced. <strong>Nesting</strong>  -  arranging parts on a stock sheet to minimise scrap;
+utilisation = used area / sheet area. <strong>S235JR / S355JR</strong>  -  structural steel grades;
+<strong>SS304 / SS316</strong>  -  stainless grades. <strong>Heat / lot</strong>  -  a traceable batch of raw
+material with a mill certificate. <strong>FINAL_DIM_QC</strong>  -  final dimensional inspection,
+the OSTA release gate.</p>
+<h1 id="appendix-d-known-mvp-limitations">Appendix D  -  Known MVP limitations</h1>
+<ul>
+<li>No persistence, auth, or multi-tenancy; refresh resets all state.</li>
+<li>Import / RFQ / "status pack" / integration buttons are toast stubs.</li>
+<li>KPIs and some risk cards are curated constants, not computed.</li>
+<li><code>SheetView</code> nesting is illustrative only (deterministic shelf-pack, not a nester).</li>
+<li><code>recharts</code> is a dependency but unused (charts are inline SVG).</li>
+<li>No automated tests yet; <code>noUnusedLocals</code>/<code>noUnusedParameters</code> disabled.</li>
+<li>Accessibility and <code>loading</code>/<code>error</code> states need a dedicated pass.</li>
+</ul>
+</body></html>
